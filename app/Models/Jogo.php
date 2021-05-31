@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Jogo extends Model
 {
     use HasFactory;
+
+
+    public function tabuleiros()
+    {
+        return $this->hasMany(Tabuleiro::class);
+    }
 }
