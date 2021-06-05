@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Historico extends Model
 {
     use HasFactory;
+
+    public $fillable = [
+        'nome_do_jogador',
+        'jogadas',
+    ];
 }
