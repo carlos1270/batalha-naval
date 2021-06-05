@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Jogo;
 
 class JogoController extends Controller
 {
@@ -11,6 +12,9 @@ class JogoController extends Controller
     }
 
     public function criarJogo() {
-        dd('programar conteúdo do método');
+        $jogo = new Jogo();
+        $jogo->save();
+
+        return view('posicionar-navios', compact('jogo'));
     }
 }
