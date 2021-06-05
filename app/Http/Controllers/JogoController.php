@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Jogo;
+use App\Models\Tabuleiro;
+use App\Models\Casa;
 
 class JogoController extends Controller
 {
@@ -14,6 +16,8 @@ class JogoController extends Controller
     public function criarJogo() {
         $jogo = new Jogo();
         $jogo->save();
+
+        $tabuleiros = Tabuleiro::criarTabuleiros($jogo);
 
         return view('posicionar-navios', compact('jogo'));
     }
