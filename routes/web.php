@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JogoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +13,5 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [JogoController::class, 'index'])->name('index');
+Route::get('/novo-jogo', [JogoController::class, 'criarJogo'])->name('jogo.new');
