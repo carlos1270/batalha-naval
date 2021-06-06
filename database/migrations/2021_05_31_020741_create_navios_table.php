@@ -16,7 +16,7 @@ class CreateNaviosTable extends Migration
         Schema::create('navios', function (Blueprint $table) {
             $table->Increments('id');
             $table->Integer('tamanho');
-            $table->Integer('afundado');
+            $table->Boolean('afundado')->nullable(true);
             $table->Integer('tabuleiro_id');
             $table->timestamps();
         });

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\jogo;
 use App\Models\Casa;
+use App\Models\Navio;
 
 class Tabuleiro extends Model
 {
@@ -43,6 +44,7 @@ class Tabuleiro extends Model
         $tabuleiroJogador->jogo_id = $jogo->id;
         $tabuleiroJogador->save();
         Casa::criarCasas($tabuleiroJogador);
+        Navio::criarNavios($tabuleiroJogador);
         $tabuleiros->push($tabuleiroJogador);
 
         $tabuleiroCOM = new Tabuleiro();
@@ -53,6 +55,7 @@ class Tabuleiro extends Model
         $tabuleiroCOM->save();
         $tabuleiros->push($tabuleiroCOM);
         Casa::criarCasas($tabuleiroCOM);
+        Navio::criarNavios($tabuleiroCOM);
     
         return $tabuleiros;        
     } 

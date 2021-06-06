@@ -36,6 +36,8 @@ class Casa extends Model
                 $casa = new Casa();
                 $casa->linha = $i;
                 $casa->coluna = $j;
+                $casa->preenchido = FALSE;
+                $casa->acertado = FALSE;
                 $casa->tabuleiro_id = $tabuleiro->id;
                 $casa->save();
             }
