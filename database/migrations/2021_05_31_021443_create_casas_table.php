@@ -17,8 +17,8 @@ class CreateCasasTable extends Migration
             $table->Increments('id');
             $table->Integer('linha');
             $table->Integer('coluna');
-            $table->Integer('preenchido')->nullable(true);
-            $table->Integer('acertado')->nullable(true);
+            $table->Boolean('preenchido')->nullable(true);
+            $table->Boolean('acertado')->nullable(true);
             $table->Integer('posicao_do_navio')->nullable(true);
             $table->Integer('tabuleiro_id');
             $table->Integer('navio_id')->nullable(true);
