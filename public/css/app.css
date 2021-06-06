@@ -1,4 +1,5 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);
+@import url(https://fonts.googleapis.com/css?family=lato:400,700);
 @charset "UTF-8";
 /*!
  * Bootstrap v4.6.0 (https://getbootstrap.com/)
@@ -10001,4 +10002,165 @@ h3 {
     color: inherit;
     border-color: #dee2e6;
   }
+}
+body {
+  overflow-x: hidden;
+  font-family: "Lato", sans-serif;
+  color: #505962;
+}
+
+.navbar {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.navbar-brand img {
+  height: 2rem;
+}
+
+.video-background {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.caption {
+  position: absolute;
+  top: 38%;
+  width: 100%;
+  color: white;
+}
+
+.caption h2 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: 0.2rem;
+  text-shadow: 0.1rem 0.1rem 0.8rem black;
+  padding-bottom: 1rem;
+}
+
+.caption h3 {
+  font-size: 2rem;
+  text-shadow: 0.1rem 0.1rem 0.5rem black;
+  padding-bottom: 1.6rem;
+}
+
+.btn-lg, .btn-group-lg > .btn {
+  border-width: medium;
+  border-radius: 0;
+  font-size: 1.1rem;
+  padding: 0.6rem 1.3rem;
+}
+
+/*============= COURSE SECTION =============*/
+.col-md-8 {
+  margin: 2rem auto 8rem;
+  padding-top: 2rem;
+}
+
+.col-md-8 h1 {
+  font-size: 2.4rem;
+}
+
+.btn-secondary {
+  border-width: medium;
+  border-radius: 0;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  margin: 1rem;
+  border-color: #1EBBA3;
+  background-color: #1EBBA3;
+  color: white;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  border-color: #189582;
+  background-color: #189582;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .caption h2 {
+    font-size: 1.4rem;
+    letter-spacing: 0.15rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .caption h3 {
+    font-size: 1.1rem;
+    padding-bottom: 1.2rem;
+  }
+
+  .btn-lg, .btn-group-lg > .btn {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .col-md-8 h1 {
+    font-size: 1.7rem;
+  }
+}
+/*============ BOOTSTRAP BREAK POINTS:
+
+Extra small (xs) devices (portrait phones, less than 576px)
+No media query since this is the default in Bootstrap
+
+Small (sm) devices (landscape phones, 576px and up)
+@media (min-width: 576px) { ... }
+
+Medium (md) devices (tablets, 768px and up)
+@media (min-width: 768px) { ... }
+
+Large (lg) devices (desktops, 992px and up)
+@media (min-width: 992px) { ... }
+
+Extra (xl) large devices (large desktops, 1200px and up)
+@media (min-width: 1200px) { ... }
+
+=============*/
+/*--- Bootstrap Mobile Gutter Fix --*/
+.row, .container-fluid, .container-sm, .container-md, .container-lg, .container-xl {
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+
+/*--- Fixed Video Background iOS/Mobile Style--*/
+.video-wrap {
+  clip: rect(0, auto, auto, 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+#video {
+  position: fixed;
+  display: block;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center center;
+  transform: translateZ(0);
+  will-change: transform;
+  z-index: -1000;
+}
+
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  transform: translateX(-50%) translateY(-50%);
+  background: url("") no-repeat;
+  background-size: cover;
+  transition: 1s opacity;
 }
