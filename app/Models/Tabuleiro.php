@@ -16,7 +16,7 @@ class Tabuleiro extends Model
         'qtd_linhas',
         'qtd_colunas',
         'qtd_jogadas',
-        'jogo_id', 
+        'jogo_id',
     ];
 
     public function jogo()
@@ -33,30 +33,4 @@ class Tabuleiro extends Model
     {
         return $this->hasMany(Navio::class, 'tabuleiro_id');
     }
-
-    public static function criarTabuleiros(Jogo $jogo) {
-        $tabuleiros = collect();
-
-        $tabuleiroJogador = new Tabuleiro();
-        $tabuleiroJogador->qtd_linhas = 10;
-        $tabuleiroJogador->qtd_colunas = 10;
-        $tabuleiroJogador->qtd_jogadas = 0;
-        $tabuleiroJogador->jogo_id = $jogo->id;
-        $tabuleiroJogador->save();
-        Casa::criarCasas($tabuleiroJogador);
-        Navio::criarNavios($tabuleiroJogador);
-        $tabuleiros->push($tabuleiroJogador);
-
-        $tabuleiroCOM = new Tabuleiro();
-        $tabuleiroCOM->qtd_linhas = 10;
-        $tabuleiroCOM->qtd_colunas = 10;
-        $tabuleiroCOM->qtd_jogadas = 0;
-        $tabuleiroCOM->jogo_id = $jogo->id;
-        $tabuleiroCOM->save();
-        $tabuleiros->push($tabuleiroCOM);
-        Casa::criarCasas($tabuleiroCOM);
-        Navio::criarNavios($tabuleiroCOM);
-    
-        return $tabuleiros;        
-    } 
 }
