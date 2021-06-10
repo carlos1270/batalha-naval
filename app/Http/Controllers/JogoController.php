@@ -17,7 +17,7 @@ class JogoController extends Controller
         $jogo = new Jogo();
         $jogo->save();
 
-        $tabuleiros = Tabuleiro::criarTabuleiros($jogo);
+        $tabuleiros = TabuleiroController::criarTabuleiros($jogo);
 
         return view('posicionar-navios', compact('jogo'));
     }
