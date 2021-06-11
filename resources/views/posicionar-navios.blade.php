@@ -69,7 +69,7 @@
           };
           images[src].src = sources[src];
         }
-      }
+      };
 
       function getCasasProximo(navio, casas){//Pega a casa mais proxima do navio pra fazer o encaixe, se existir uma
           let selecionada = [];
@@ -89,23 +89,45 @@
             }
           }
           return selecionada;
-      }
+      };
 
       function getLinhaCasa(casa){
         return casa.linha;
-      }
+      };
 
       function getColunaCasa(casa){
         return casa.coluna;
-      }
-
-      function setNavioPosicionado(nav, valor){
-          nav.posicionado = valor;
-      }
+      };
 
       function getNavioPosicionado(nav){
           return nav.posicionado;
-      }
+      };
+
+      function getNavioTamanho(nav){
+          return nav.tamanho;
+      };
+
+      function setCasaOcupada(casa, valor){
+        casa.ocupada = valor;
+      };
+
+      function setNavioPosicionado(nav, valor){
+          nav.posicionado = valor;
+      };
+
+      function setRollCasasAcima(nav, casa, casas, valor){
+        for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
+            setCasaOcupada(cas, valor);
+        }
+      };
+
+      function setRollCasasDireita(nav, casa, casas, valor){
+        for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
+            setCasaOcupada(cas, valor);
+        }
+      };
 
       function foraDaTela(navio){
         if(navio.x() > telaLargura-50 || navio.x() < 0 || navio.y() > telaAltura-50 || navio.y() < 0){
@@ -113,7 +135,59 @@
         }else{
           return false;
         }
-      }
+      };
+
+      function verificarAcima(nav, casa, casas){
+          if(getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
+            for(let i = 0; i < getNavioTamanho(nav); i++){
+                let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
+                if(cas.ocupada){
+                    return false;
+                }
+            }
+            return  true;
+          }else{
+              return false;
+          }
+      };
+
+      function verificarDireita(nav, casa, casas){
+          if(getColunaCasa(casa)+getNavioTamanho(nav) <= 10){
+            for(let i = 0; i < getNavioTamanho(nav); i++){
+                let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
+                if(cas.ocupada){
+                    return false;
+                }
+            }
+            return  true;
+          }else{
+              return false;
+          }
+      };
+
+      function espacoSuficiente(navio, nav, casa, casas){
+          if(navio.rotation() == anguloDeRotacao){
+            return verificarAcima(nav, casa, casas);
+          }else{
+            return verificarDireita(nav, casa, casas);
+          }
+      };
+
+      function setRollCasas(navio, nav, casa, casas, valor){
+          if(navio.rotation() == anguloDeRotacao){
+            setRollCasasAcima(nav, casa, casas, valor);
+          }else{
+            setRollCasasDireita(nav, casa, casas, valor);
+          }
+      };
+
+      function limparRollCasas(navio, nav, casas){
+          let resultado = getCasasProximo(navio, casas);
+          if (!resultado.length == 0){
+            let casa = casas[resultado[0]];
+            setRollCasas(navio, nav, casa, casas, false);
+        }
+      };
 
       function verificarTodosPosicionados(navios){
           for (let key in navios){
@@ -122,6 +196,15 @@
                 return false;
             }
           }
+          return true;
+      };
+
+      function voltarPosicaoInicial(navio, nav){
+          navio.position({
+              x: nav.x,
+              y: nav.y,
+        });
+        navio.rotation(0);
       }
 
       function initStage(images) {//inicializa as imagens
@@ -141,13 +224,13 @@
 
         for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
           for(let j = 1; j <= tamanhoTabuleiro; j++){
-            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
+            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
 
           }
         };
 
         for(let i = 1; i <= quantidadeNavios; i++){
-            navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: document.getElementById('tamanho_navio'+i).value, id: document.getElementById('navio'+i).value};
+            navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: parseInt(document.getElementById('tamanho_navio'+i).value), id: document.getElementById('navio'+i).value};
         }
 
         for (var key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
@@ -179,30 +262,35 @@
 
             navio.on('dragstart', function () {
               this.moveToTop();
+              limparRollCasas(navio, nav, casas);
             });
 
             navio.on('dragend', function () { //função pra quando arrastar, fazer o encaixe certinho
-                console.log(nav);
                 let resultado = getCasasProximo(navio, casas);
                 if (!resultado.length == 0){
                     let casa = casas[resultado[0]];
-                    if (!navio.inRightPlace) {
-                        setNavioPosicionado(nav, true);
-                        if(navio.rotation() == 0){//essa variação aqui é por causa que depende se o navio ta em uma posicao diferente
-                            navio.position({
-                                x: casa.x+(5),
-                                y: casa.y+(5),
-                            });
+                    if(espacoSuficiente(navio, nav, casa, casas)){
+                        setRollCasas(navio, nav, casa, casas, true);
+                        if (!navio.inRightPlace) {
+                            setNavioPosicionado(nav, true);
+                            if(navio.rotation() == 0){//essa variação aqui é por causa que depende se o navio ta em uma posicao diferente
+                                navio.position({
+                                    x: casa.x+(5),
+                                    y: casa.y+(5),
+                                });
+                            }else{
+                                navio.position({
+                                    x: casa.x+(5),
+                                    y: casa.y+espacoDeEncaixe+15,
+                                });
+                            }
                         }else{
-                            navio.position({
-                                x: casa.x+(5),
-                                y: casa.y+espacoDeEncaixe+15,
-                            });
+                            if(getNavioPosicionado(nav)){
+                                setNavioPosicionado(nav, false);
+                            }
                         }
                     }else{
-                        if(getNavioPosicionado(nav)){
-                            setNavioPosicionado(nav, false);
-                        }
+                        voltarPosicaoInicial(navio, nav);
                     }
                 }else{
                     if(getNavioPosicionado(nav)){
@@ -227,6 +315,7 @@
 
             navio.on('click', function() {//clicar nele gira o bagulho :)
                 setNavioPosicionado(nav, false);
+                limparRollCasas(navio, nav, casas);
                 if(navio.rotation() == anguloDeRotacao){
                     navio.rotation(0)
                     navioLayer.draw();
