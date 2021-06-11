@@ -10,11 +10,6 @@
 </head>
 <body>
 
-    <nav class="navbar navbar-dark fixed-top">
-        <a class="navbar-brand mx-auto" href="#"><img src="img/ufape.png" alt="" ></a>
-        <a class="btn btn-outline-light btn-lg" onclick="enableMute()" target="_blank">Mutar</a>
-    </nav>
-
     @yield('content')
 
     <audio id="background-sound" controls loop muted autoplay hidden>
@@ -31,6 +26,18 @@
                 bgaudio.muted = true;
             }
         }
+
+        var prevScrollpos = window.pageYOffset;
+        window.onscroll = function() {
+        var currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos) {
+            document.getElementById("navbar").style.top = "0";
+        } else {
+            document.getElementById("navbar").style.top = "-70px";
+        }
+        prevScrollpos = currentScrollPos;
+        }
+
     </script>
 
 </body>

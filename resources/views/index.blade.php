@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
+    <nav id="navbar" class="navbar navbar-dark fixed-top">
+        <a class="navbar-brand mx-auto" href="#"><img src="img/ufape.png" alt="" ></a>
+        <a class="btn btn-outline-light btn-lg" onclick="enableMute()" target="_blank">Mutar</a>
+    </nav>
     <div class="video-background">
         <div class="video-wrap">
             <div id="video">
