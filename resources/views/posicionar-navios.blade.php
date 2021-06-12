@@ -29,14 +29,16 @@
         @endforeach
     </div>
 
-    <form id="" method="POST" action="">
-        <input type="hidden" name="jogo_id" value="{{$jogo->id}}">
-        @foreach ($jogo->tabuleiros[0]->casas as $casa)
-            <div id="casa_{{$casa->id}}" style="display: none;">
-                <input type="text" name="casas_id[]" value="{{$casa->id}}">
-                <input type="text" name="navio_id[]" value="">
-            </div>
-        @endforeach
+    <form id="salvar-navios-form" method="POST" action="{{route('save.navios')}}">
+      @csrf
+      <input type="hidden" name="jogo_id" value="{{$jogo->id}}">
+      @foreach ($jogo->tabuleiros[0]->casas as $casa)
+          <div id="casa_{{$casa->id}}" style="display: none;">
+              <input type="text" name="casas_id[]" value="{{$casa->id}}">
+              <input type="text" name="navio_id[]" value="">
+              <input type="text" name="posicoes_id[]" value="">
+          </div>
+      @endforeach
     </form>
 
     <div class="tabuleiro">
@@ -69,6 +71,7 @@
             };
             images[src].src = sources[src];
             }
+<<<<<<< HEAD
         };
 
         function getCasasProximo(angulo, navio, casas){//Pega a casa mais proxima do navio pra fazer o encaixe, se existir uma
@@ -90,6 +93,81 @@
             }
             return selecionada;
         };
+=======
+          }
+          return selecionada;
+      };
+
+      function getLinhaCasa(casa){
+        return casa.linha;
+      };
+
+      function getColunaCasa(casa){
+        return casa.coluna;
+      };
+
+      function getNavioPosicionado(nav){
+          return nav.posicionado;
+      };
+
+      function getNavioTamanho(nav){
+          return nav.tamanho;
+      };
+
+      function setCasaOcupada(casa, valor, id_navio, posicao){
+        casa.ocupada = valor;
+        casa.navio = id_navio;
+        casa.posicao = posicao;
+      };
+
+      function setNavioPosicionado(nav, valor){
+          nav.posicionado = valor;
+      };
+
+      function setRollCasasAcima(nav, casa, casas, valor, id_navio){
+        if (valor) {
+          for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
+            setCasaOcupada(cas, valor, id_navio, (i+1));
+          }
+        } else {
+          for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
+            setCasaOcupada(cas, valor, id_navio, null);
+          }
+        }
+      };
+
+      function setRollCasasDireita(nav, casa, casas, valor, id_navio){
+        if (valor) {
+          for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
+            setCasaOcupada(cas, valor, id_navio, (i+1));
+          }
+        } else {
+          for(let i = 0; i < getNavioTamanho(nav); i++){
+            let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
+            setCasaOcupada(cas, valor, id_navio, null);
+          }
+        }
+      };
+
+      function setRollCasas(angulo, nav, casa, casas, valor, id_navio){
+          if(angulo == anguloDeRotacao){
+            setRollCasasAcima(nav, casa, casas, valor, id_navio);
+          }else{
+            setRollCasasDireita(nav, casa, casas, valor, id_navio);
+          }
+      };
+
+      function foraDaTela(navio){
+        if(navio.x() > telaLargura-50 || navio.x() < 0 || navio.y() > telaAltura-50 || navio.y() < 0){
+          return true;
+        }else{
+          return false;
+        }
+      };
+>>>>>>> 16c640ab5dc2ab31c76892a73522acbd2a993ebe
 
         function getLinhaCasa(casa){
             return casa.linha;
@@ -158,6 +236,7 @@
             }else{
                 return false;
             }
+<<<<<<< HEAD
         };
 
         function verificarDireita(nav, casa, casas){
@@ -172,6 +251,41 @@
             }else{
                 return false;
             }
+=======
+          }
+          return true;
+      };
+
+      function setNaviosCasas(){
+        if(verificarTodosPosicionados(navios)){
+          for(let key in casas){
+            let cas = casas[key];
+            if(cas.ocupada){
+              document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
+              document.getElementById('casa_'+cas.id).children[2].value = cas.posicao;
+              console.log(cas);
+            }
+          };
+          document.getElementById('salvar-navios-form').submit();
+        }else{
+          alert('Posicione todos os navios nas casas');
+        }
+      };
+
+      function voltarPosicaoInicial(navio, nav){
+          navio.position({
+              x: nav.x,
+              y: nav.y,
+        });
+        navio.rotation(0);
+      }
+
+      function initNaviosCasas(){
+        for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
+          for(let j = 1; j <= tamanhoTabuleiro; j++){
+            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, navio: 'id_navio', id: document.getElementById('casa'+j+'x'+i).value, posicao: null}; //cria as casas dando espaco e nome unico
+          }
+>>>>>>> 16c640ab5dc2ab31c76892a73522acbd2a993ebe
         };
 
         function espacoSuficiente(angulo, nav, casa, casas){
