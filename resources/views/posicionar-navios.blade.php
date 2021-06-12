@@ -1,17 +1,19 @@
-@extends('layouts.app')
-
+@extends('layouts.posicionar')
 @section('content')
-
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
-    <meta charset="utf-8" />
-    <title>Batalha Naval Posicionamento</title>
-    <link rel="stylesheet" href="{{asset('css/app.css')}}">
-  </head>
+    <head>
+        <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
+        <meta charset="utf-8" />
+        <title>Batalha Naval Posicionamento</title>
+        <link rel="stylesheet" href="/public/css/posicionar.css">
+    </head>
+
   <body>
+    <h2>ESCOLHA A POSIÇÃO DOS NAVIOS</h2>
+
+
     <div id="container"></div>
 
     <div id="casas">
@@ -37,331 +39,342 @@
         @endforeach
     </form>
 
-    <div style="position: absolute; top: 55px; right: 200px">
-        <button onclick="setNaviosCasas()">Jogar</button>
-    </div>
+    <div class="tabuleiro">
+        <script>
+        var telaLargura = 720;
+        var telaAltura = 720;
+        var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
+        };
+        var casas = {//object pra guardar as casas
+        };
+        const tamanhoTabuleiro = 10;
+        const espacoEntreCasas = 55; //relativo ao tamanho em pixels da celula
+        const espacoDeEncaixe = 28; //pra encaixar o navio na celula
+        const anguloDeRotacao = 270; //rotacao de click no navio
+        const quantidadeNavios = 5;
 
-    <script>
-      var telaLargura = 720;
-      var telaAltura = 720;
-      var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
-      };
-      var casas = {//object pra guardar as casas
-      };
-      const tamanhoTabuleiro = 10;
-      const espacoEntreCasas = 55; //relativo ao tamanho em pixels da celula
-      const espacoDeEncaixe = 28; //pra encaixar o navio na celula
-      const anguloDeRotacao = 270; //rotacao de click no navio
-      const quantidadeNavios = 5;
-
-      function loadImages(sources, callback) { //carrega as imagens definidas em sources e as propriedades de initStage
-        var images = {};
-        var loadedImages = 0;
-        var numImages = 0;
-        for (let src in sources) {
-          numImages++;
-        }
-        for (let src in sources) {
-          images[src] = new Image();
-          images[src].onload = function () {
-            if (++loadedImages >= numImages) {
-              callback(images);
+        function loadImages(sources, callback) { //carrega as imagens definidas em sources e as propriedades de initStage
+            var images = {};
+            var loadedImages = 0;
+            var numImages = 0;
+            for (let src in sources) {
+            numImages++;
             }
-          };
-          images[src].src = sources[src];
-        }
-      };
-
-      function getCasasProximo(angulo, navio, casas){//Pega a casa mais proxima do navio pra fazer o encaixe, se existir uma
-          let selecionada = [];
-          for (var casa in casas) {
-            let a = navio;
-            let o = casas[casa];
-            let ax = a.x();
-            let ay = a.y();
-            if(angulo == anguloDeRotacao){
-              if(ax > (o.x-espacoDeEncaixe) && ax < (o.x+espacoDeEncaixe) && ay-espacoDeEncaixe > (o.y-espacoDeEncaixe) && ay-espacoDeEncaixe < (o.y+espacoDeEncaixe)){
-                selecionada.push(casa);
-              }
-            }else{
-              if(ax > (o.x-espacoDeEncaixe) && ax < (o.x+espacoDeEncaixe) && ay > (o.y-espacoDeEncaixe) && ay < (o.y+espacoDeEncaixe)){
-                selecionada.push(casa);
-              }
+            for (let src in sources) {
+            images[src] = new Image();
+            images[src].onload = function () {
+                if (++loadedImages >= numImages) {
+                callback(images);
+                }
+            };
+            images[src].src = sources[src];
             }
-          }
-          return selecionada;
-      };
+        };
 
-      function getLinhaCasa(casa){
-        return casa.linha;
-      };
+        function getCasasProximo(angulo, navio, casas){//Pega a casa mais proxima do navio pra fazer o encaixe, se existir uma
+            let selecionada = [];
+            for (var casa in casas) {
+                let a = navio;
+                let o = casas[casa];
+                let ax = a.x();
+                let ay = a.y();
+                if(angulo == anguloDeRotacao){
+                if(ax > (o.x-espacoDeEncaixe) && ax < (o.x+espacoDeEncaixe) && ay-espacoDeEncaixe > (o.y-espacoDeEncaixe) && ay-espacoDeEncaixe < (o.y+espacoDeEncaixe)){
+                    selecionada.push(casa);
+                }
+                }else{
+                if(ax > (o.x-espacoDeEncaixe) && ax < (o.x+espacoDeEncaixe) && ay > (o.y-espacoDeEncaixe) && ay < (o.y+espacoDeEncaixe)){
+                    selecionada.push(casa);
+                }
+                }
+            }
+            return selecionada;
+        };
 
-      function getColunaCasa(casa){
-        return casa.coluna;
-      };
+        function getLinhaCasa(casa){
+            return casa.linha;
+        };
 
-      function getNavioPosicionado(nav){
-          return nav.posicionado;
-      };
+        function getColunaCasa(casa){
+            return casa.coluna;
+        };
 
-      function getNavioTamanho(nav){
-          return nav.tamanho;
-      };
+        function getNavioPosicionado(nav){
+            return nav.posicionado;
+        };
 
-      function setCasaOcupada(casa, valor, id_navio){
-        casa.ocupada = valor;
-        casa.navio = id_navio;
-      };
+        function getNavioTamanho(nav){
+            return nav.tamanho;
+        };
 
-      function setNavioPosicionado(nav, valor){
-          nav.posicionado = valor;
-      };
+        function setCasaOcupada(casa, valor, id_navio){
+            casa.ocupada = valor;
+            casa.navio = id_navio;
+        };
 
-      function setRollCasasAcima(nav, casa, casas, valor, id_navio){
-        for(let i = 0; i < getNavioTamanho(nav); i++){
-            let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
-            setCasaOcupada(cas, valor, id_navio);
-        }
-      };
+        function setNavioPosicionado(nav, valor){
+            nav.posicionado = valor;
+        };
 
-      function setRollCasasDireita(nav, casa, casas, valor, id_navio){
-        for(let i = 0; i < getNavioTamanho(nav); i++){
-            let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
-            setCasaOcupada(cas, valor, id_navio);
-        }
-      };
-
-      function setRollCasas(angulo, nav, casa, casas, valor, id_navio){
-          if(angulo == anguloDeRotacao){
-            setRollCasasAcima(nav, casa, casas, valor, id_navio);
-          }else{
-            setRollCasasDireita(nav, casa, casas, valor, id_navio);
-          }
-      };
-
-      function foraDaTela(navio){
-        if(navio.x() > telaLargura-50 || navio.x() < 0 || navio.y() > telaAltura-50 || navio.y() < 0){
-          return true;
-        }else{
-          return false;
-        }
-      };
-
-      function verificarAcima(nav, casa, casas){
-          if(getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
+        function setRollCasasAcima(nav, casa, casas, valor, id_navio){
             for(let i = 0; i < getNavioTamanho(nav); i++){
                 let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
-                if(cas.ocupada){
-                    return false;
-                }
+                setCasaOcupada(cas, valor, id_navio);
             }
-            return  true;
-          }else{
-              return false;
-          }
-      };
+        };
 
-      function verificarDireita(nav, casa, casas){
-          if(getColunaCasa(casa)+getNavioTamanho(nav)-1 <= 10){
+        function setRollCasasDireita(nav, casa, casas, valor, id_navio){
             for(let i = 0; i < getNavioTamanho(nav); i++){
                 let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
-                if(cas.ocupada){
+                setCasaOcupada(cas, valor, id_navio);
+            }
+        };
+
+        function setRollCasas(angulo, nav, casa, casas, valor, id_navio){
+            if(angulo == anguloDeRotacao){
+                setRollCasasAcima(nav, casa, casas, valor, id_navio);
+            }else{
+                setRollCasasDireita(nav, casa, casas, valor, id_navio);
+            }
+        };
+
+        function foraDaTela(navio){
+            if(navio.x() > telaLargura-50 || navio.x() < 0 || navio.y() > telaAltura-50 || navio.y() < 0){
+            return true;
+            }else{
+            return false;
+            }
+        };
+
+        function verificarAcima(nav, casa, casas){
+            if(getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
+                for(let i = 0; i < getNavioTamanho(nav); i++){
+                    let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
+                    if(cas.ocupada){
+                        return false;
+                    }
+                }
+                return  true;
+            }else{
+                return false;
+            }
+        };
+
+        function verificarDireita(nav, casa, casas){
+            if(getColunaCasa(casa)+getNavioTamanho(nav)-1 <= 10){
+                for(let i = 0; i < getNavioTamanho(nav); i++){
+                    let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
+                    if(cas.ocupada){
+                        return false;
+                    }
+                }
+                return  true;
+            }else{
+                return false;
+            }
+        };
+
+        function espacoSuficiente(angulo, nav, casa, casas){
+            if(angulo == anguloDeRotacao){
+                return verificarAcima(nav, casa, casas);
+            }else{
+                return verificarDireita(nav, casa, casas);
+            }
+        };
+
+        function limparRollCasas(angulo, navio, nav, casas){
+            let resultado = getCasasProximo(angulo, navio, casas);
+            if (!resultado.length == 0){
+                let casa = casas[resultado[0]];
+                if(angulo == anguloDeRotacao && getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
+                    setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
+                }else{
+                    if(angulo == 0 && getColunaCasa(casa)+getNavioTamanho(nav)-1 <= 10){
+                        setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
+                    }
+                }
+            }
+        };
+
+        function verificarTodosPosicionados(navios){
+            for (let key in navios){
+                let nav = navios[key];
+                if(!nav.posicionado){
                     return false;
                 }
             }
-            return  true;
-          }else{
-              return false;
-          }
-      };
+            return true;
+        };
 
-      function espacoSuficiente(angulo, nav, casa, casas){
-          if(angulo == anguloDeRotacao){
-            return verificarAcima(nav, casa, casas);
-          }else{
-            return verificarDireita(nav, casa, casas);
-          }
-      };
-
-      function limparRollCasas(angulo, navio, nav, casas){
-          let resultado = getCasasProximo(angulo, navio, casas);
-          if (!resultado.length == 0){
-            let casa = casas[resultado[0]];
-            if(angulo == anguloDeRotacao && getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
-                setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
-            }else{
-                if(angulo == 0 && getColunaCasa(casa)+getNavioTamanho(nav)-1 <= 10){
-                    setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
+        function setNaviosCasas(){
+            if(verificarTodosPosicionados(navios)){
+            for(let key in casas){
+                let cas = casas[key];
+                if(cas.ocupada){
+                document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
+                console.log(cas);
                 }
+            };
+            }else{
+            alert('Posicione todos os navios nas casas');
             }
-        }
-
-      };
-
-      function verificarTodosPosicionados(navios){
-          for (let key in navios){
-            let nav = navios[key];
-            if(!nav.posicionado){
-                return false;
-            }
-          }
-          return true;
-      };
-
-      function setNaviosCasas(){
-        if(verificarTodosPosicionados(navios)){
-          for(let key in casas){
-            let cas = casas[key];
-            if(cas.ocupada){
-              document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
-              console.log(cas);
-            }
-          };
-        }else{
-          alert('Posicione todos os navios nas casas');
-        }
-      };
-
-      function voltarPosicaoInicial(navio, nav){
-          navio.position({
-              x: nav.x,
-              y: nav.y,
-        });
-        navio.rotation(0);
-      }
-
-      function initNaviosCasas(){
-        for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
-          for(let j = 1; j <= tamanhoTabuleiro; j++){
-            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, navio: 'id_navio', id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
-          }
         };
-        for(let i = 1; i <= quantidadeNavios; i++){
-            navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: parseInt(document.getElementById('tamanho_navio'+i).value), id: document.getElementById('navio'+i).value};
-        };
-      };
 
-      function initStage(images) {//inicializa as imagens
-        var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
-          container: 'container',
-          width: telaLargura,
-          height: telaAltura,
-        });
-        var navioLayer = new Konva.Layer();
-
-        for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
-          (function () {
-            let imageObj = images[key];
-            let cas = casas[key];
-
-            let casa = new Konva.Image({
-              image: imageObj,
-              x: cas.x,
-              y: cas.y,
+        function voltarPosicaoInicial(navio, nav){
+            navio.position({
+                x: nav.x,
+                y: nav.y,
             });
-
-            navioLayer.add(casa);
-          })();
+            navio.rotation(0);
         }
 
-        for (let key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
-          (function () {
-            let privKey = key;
-            let nav = navios[key];
+        function initNaviosCasas(){
+            for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
+            for(let j = 1; j <= tamanhoTabuleiro; j++){
+                casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, navio: 'id_navio', id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
+            }
+            };
+            for(let i = 1; i <= quantidadeNavios; i++){
+                navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: parseInt(document.getElementById('tamanho_navio'+i).value), id: document.getElementById('navio'+i).value};
+            };
+        };
 
-            let navio = new Konva.Image({
-              image: images[key],
-              x: nav.x,
-              y: nav.y,
-              draggable: true,
+        function initStage(images) {//inicializa as imagens
+            var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
+            container: 'container',
+            width: telaLargura,
+            height: telaAltura,
             });
+            var navioLayer = new Konva.Layer();
 
-            navio.on('dragstart', function () {
-              this.moveToTop();
-              limparRollCasas(navio.rotation(), navio, nav, casas);
-            });
+            for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
+            (function () {
+                let imageObj = images[key];
+                let cas = casas[key];
 
-            navio.on('dragend', function () { //função pra quando arrastar, fazer o encaixe certinho
-                let resultado = getCasasProximo(navio.rotation(), navio, casas);
-                if (!resultado.length == 0){
-                    let casa = casas[resultado[0]];
-                    if(espacoSuficiente(navio.rotation(), nav, casa, casas)){
-                        setRollCasas(navio.rotation(), nav, casa, casas, true, nav.id);
-                        if (!navio.inRightPlace) {
-                            setNavioPosicionado(nav, true);
-                            if(navio.rotation() == 0){//essa variação aqui é por causa que depende se o navio ta em uma posicao diferente
-                                navio.position({
-                                    x: casa.x+(5),
-                                    y: casa.y+(5),
-                                });
+                let casa = new Konva.Image({
+                image: imageObj,
+                x: cas.x,
+                y: cas.y,
+                });
+
+                navioLayer.add(casa);
+            })();
+            }
+
+            for (let key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
+            (function () {
+                let privKey = key;
+                let nav = navios[key];
+
+                let navio = new Konva.Image({
+                image: images[key],
+                x: nav.x,
+                y: nav.y,
+                draggable: true,
+                });
+
+                navio.on('dragstart', function () {
+                this.moveToTop();
+                limparRollCasas(navio.rotation(), navio, nav, casas);
+                });
+
+                navio.on('dragend', function () { //função pra quando arrastar, fazer o encaixe certinho
+                    let resultado = getCasasProximo(navio.rotation(), navio, casas);
+                    if (!resultado.length == 0){
+                        let casa = casas[resultado[0]];
+                        if(espacoSuficiente(navio.rotation(), nav, casa, casas)){
+                            setRollCasas(navio.rotation(), nav, casa, casas, true, nav.id);
+                            if (!navio.inRightPlace) {
+                                setNavioPosicionado(nav, true);
+                                if(navio.rotation() == 0){//essa variação aqui é por causa que depende se o navio ta em uma posicao diferente
+                                    navio.position({
+                                        x: casa.x+(5),
+                                        y: casa.y+(5),
+                                    });
+                                }else{
+                                    navio.position({
+                                        x: casa.x+(5),
+                                        y: casa.y+espacoDeEncaixe+15,
+                                    });
+                                }
                             }else{
-                                navio.position({
-                                    x: casa.x+(5),
-                                    y: casa.y+espacoDeEncaixe+15,
-                                });
+                                if(getNavioPosicionado(nav)){
+                                    setNavioPosicionado(nav, false);
+                                }
                             }
                         }else{
-                            if(getNavioPosicionado(nav)){
-                                setNavioPosicionado(nav, false);
-                            }
+                            voltarPosicaoInicial(navio, nav);
                         }
                     }else{
+                        if(getNavioPosicionado(nav)){
+                            setNavioPosicionado(nav, false);
+                        }
+                        if (foraDaTela(navio)){
                         voltarPosicaoInicial(navio, nav);
+                        }
                     }
-                }else{
-                    if(getNavioPosicionado(nav)){
-                        setNavioPosicionado(nav, false);
-                    }
-                    if (foraDaTela(navio)){
-                      voltarPosicaoInicial(navio, nav);
-                    }
-                }
-            });
-            navio.on('mouseout', function () {
-              navio.image(images[privKey]);
-              document.body.style.cursor = 'default';
-            });
+                });
+                navio.on('mouseout', function () {
+                navio.image(images[privKey]);
+                document.body.style.cursor = 'default';
+                });
 
-            navio.on('dragmove', function () {
-              document.body.style.cursor = 'pointer';
-            });
+                navio.on('dragmove', function () {
+                document.body.style.cursor = 'pointer';
+                });
 
-            navio.on('click', function() {//clicar nele gira o bagulho :)
-                setNavioPosicionado(nav, false);
-                limparRollCasas(navio.rotation(), navio, nav, casas);
-                if(navio.rotation() == anguloDeRotacao){
-                    navio.rotation(0)
-                    navioLayer.draw();
-                }else{
-                    navio.rotation(anguloDeRotacao);
-                    navioLayer.draw();
-                };
-            });
+                navio.on('click', function() {//clicar nele gira o bagulho :)
+                    setNavioPosicionado(nav, false);
+                    limparRollCasas(navio.rotation(), navio, nav, casas);
+                    if(navio.rotation() == anguloDeRotacao){
+                        navio.rotation(0)
+                        navioLayer.draw();
+                    }else{
+                        navio.rotation(anguloDeRotacao);
+                        navioLayer.draw();
+                    };
+                });
 
-            navioLayer.add(navio);
-          })();
+                navioLayer.add(navio);
+            })();
+            }
+
+            stage.add(navioLayer);
         }
 
-        stage.add(navioLayer);
-      }
+        var sources = {//source de onde fica os navios
+        };
 
-      var sources = {//source de onde fica os navios
-      };
+        for(let i = 1; i <= quantidadeNavios; i++){
+            sources['navio'+i] = '{{asset('img/navios/navioS.png')}}';
+        }
 
-      for(let i = 1; i <= quantidadeNavios; i++){
-          sources['navio'+i] = '{{asset('img/navios/navioS.png')}}';
-      }
+        for(let i = 1; i <= tamanhoTabuleiro; i++){//cria um source pra cada casa e coloca em sources
+            for(let j = 1; j <= tamanhoTabuleiro; j++){
+                sources['casa'+i+'x'+j] = '{{asset('img/cell_board.png')}}';
+            }
+        };
 
-      for(let i = 1; i <= tamanhoTabuleiro; i++){//cria um source pra cada casa e coloca em sources
-          for(let j = 1; j <= tamanhoTabuleiro; j++){
-            sources['casa'+i+'x'+j] = '{{asset('img/cell_board.png')}}';
-          }
-      };
+        initNaviosCasas();
+        loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
 
-      initNaviosCasas();
-      loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
+        </script>
+    </div>
 
-    </script>
+    <div class="buttons">
+        <div class="button-comecar" onclick="setNaviosCasas()">
+            <input href="#" type="button" class="button comecar" value="Começar">
+        </div>
+
+        <div class="button-resetar" onclick="">
+            <input href="#" type="button" class="button resetar" value="Resetar">
+        </div>
+
+        <div class="button-voltar" onclick="">
+            <input href="#" type="button" class="button voltar" value="Voltar">
+        </div>
+    </div>
 
 
   </body>

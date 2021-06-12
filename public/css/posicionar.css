@@ -1,0 +1,76 @@
+body{
+    background-color: #dbd5d5;
+    position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+
+h2{
+    color: #007fb7;
+    font-size: 2em;
+    text-align: center;
+}
+
+h2:after, h2:before{
+    content: '';
+    display: block;
+    width: 200px;
+    height: 3px;
+    background: #007fb7;
+    margin: 0 auto;
+}
+
+/* BOTÕES */
+.button{
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    border: 2px solid #007fb7;
+    border-radius: 0.6em;
+    color: #007fb7;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-align-self: center;
+    -ms-flex-item-align: center;
+    align-self: center;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1;
+    margin: 20px;
+    padding: 1.0em 2.6em;
+    text-decoration: none;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+
+.button:hover, .button:focus {
+    color: #d7e2ce;
+    outline: 0;
+}
+
+.comecar, .resetar, .voltar {
+    -webkit-transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+    transition: box-shadow 300ms ease-in-out, color 300ms ease-in-out;
+}
+
+.comecar:hover, .resetar:hover, .voltar:hover {
+    box-shadow: 0 0 40px 40px #00929d inset;
+}
+
+.button-comecar, .button-resetar, .button-voltar{
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+
+
