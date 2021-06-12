@@ -1,8 +1,4 @@
 @extends('layouts.posicionar')
-<<<<<<< HEAD
-=======
-
->>>>>>> jackson
 @section('content')
 
 <!DOCTYPE html>
