@@ -9,14 +9,7 @@
     <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
     <meta charset="utf-8" />
     <title>Batalha Naval Posicionamento</title>
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        background-color: #f0f0f0;
-      }
-    </style>
+    <link rel="stylesheet" href="{{asset('css/app.css')}}">
   </head>
   <body>
     <div id="container"></div>
@@ -44,10 +37,17 @@
         @endforeach
     </form>
 
+    <div style="position: absolute; top: 55px; right: 200px">
+        <button onclick="setNaviosCasas()">Jogar</button>
+    </div>
+
     <script>
       var telaLargura = 720;
       var telaAltura = 720;
-      var listaNavios = [];
+      var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
+      };
+      var casas = {//object pra guardar as casas
+      };
       const tamanhoTabuleiro = 10;
       const espacoEntreCasas = 55; //relativo ao tamanho em pixels da celula
       const espacoDeEncaixe = 28; //pra encaixar o navio na celula
@@ -108,33 +108,34 @@
           return nav.tamanho;
       };
 
-      function setCasaOcupada(casa, valor){
+      function setCasaOcupada(casa, valor, id_navio){
         casa.ocupada = valor;
+        casa.navio = id_navio;
       };
 
       function setNavioPosicionado(nav, valor){
           nav.posicionado = valor;
       };
 
-      function setRollCasasAcima(nav, casa, casas, valor){
+      function setRollCasasAcima(nav, casa, casas, valor, id_navio){
         for(let i = 0; i < getNavioTamanho(nav); i++){
             let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
-            setCasaOcupada(cas, valor);
+            setCasaOcupada(cas, valor, id_navio);
         }
       };
 
-      function setRollCasasDireita(nav, casa, casas, valor){
+      function setRollCasasDireita(nav, casa, casas, valor, id_navio){
         for(let i = 0; i < getNavioTamanho(nav); i++){
             let cas = casas['casa'+getLinhaCasa(casa)+'x'+(getColunaCasa(casa)+i)];
-            setCasaOcupada(cas, valor);
+            setCasaOcupada(cas, valor, id_navio);
         }
       };
 
-      function setRollCasas(angulo, nav, casa, casas, valor){
+      function setRollCasas(angulo, nav, casa, casas, valor, id_navio){
           if(angulo == anguloDeRotacao){
-            setRollCasasAcima(nav, casa, casas, valor);
+            setRollCasasAcima(nav, casa, casas, valor, id_navio);
           }else{
-            setRollCasasDireita(nav, casa, casas, valor);
+            setRollCasasDireita(nav, casa, casas, valor, id_navio);
           }
       };
 
@@ -187,10 +188,10 @@
           if (!resultado.length == 0){
             let casa = casas[resultado[0]];
             if(angulo == anguloDeRotacao && getLinhaCasa(casa)-getNavioTamanho(nav) >= 0){
-                setRollCasas(angulo, nav, casa, casas, false);
+                setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
             }else{
                 if(angulo == 0 && getColunaCasa(casa)+getNavioTamanho(nav)-1 <= 10){
-                    setRollCasas(angulo, nav, casa, casas, false);
+                    setRollCasas(angulo, nav, casa, casas, false, 'id_navio');
                 }
             }
         }
@@ -207,6 +208,20 @@
           return true;
       };
 
+      function setNaviosCasas(){
+        if(verificarTodosPosicionados(navios)){
+          for(let key in casas){
+            let cas = casas[key];
+            if(cas.ocupada){
+              document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
+              console.log(cas);
+            }
+          };
+        }else{
+          alert('Posicione todos os navios nas casas');
+        }
+      };
+
       function voltarPosicaoInicial(navio, nav){
           navio.position({
               x: nav.x,
@@ -214,6 +229,17 @@
         });
         navio.rotation(0);
       }
+
+      function initNaviosCasas(){
+        for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
+          for(let j = 1; j <= tamanhoTabuleiro; j++){
+            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, navio: 'id_navio', id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
+          }
+        };
+        for(let i = 1; i <= quantidadeNavios; i++){
+            navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: parseInt(document.getElementById('tamanho_navio'+i).value), id: document.getElementById('navio'+i).value};
+        };
+      };
 
       function initStage(images) {//inicializa as imagens
         var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
@@ -223,29 +249,12 @@
         });
         var navioLayer = new Konva.Layer();
 
-        var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
-        };
-
-        var casas = {//object pra guardar as casas
-        };
-
-        for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
-          for(let j = 1; j <= tamanhoTabuleiro; j++){
-            casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: false, id: document.getElementById('casa'+j+'x'+i).value}; //cria as casas dando espaco e nome unico
-
-          }
-        };
-
-        for(let i = 1; i <= quantidadeNavios; i++){
-            navios['navio'+i] = {x: espacoEntreCasas*(tamanhoTabuleiro+1), y: (espacoEntreCasas*(i+1)), posicionado: false, tamanho: parseInt(document.getElementById('tamanho_navio'+i).value), id: document.getElementById('navio'+i).value};
-        }
-
-        for (var key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
+        for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
           (function () {
-            var imageObj = images[key];
-            var cas = casas[key];
+            let imageObj = images[key];
+            let cas = casas[key];
 
-            var casa = new Konva.Image({
+            let casa = new Konva.Image({
               image: imageObj,
               x: cas.x,
               y: cas.y,
@@ -255,10 +264,10 @@
           })();
         }
 
-        for (var key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
+        for (let key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
           (function () {
-            var privKey = key;
-            var nav = navios[key];
+            let privKey = key;
+            let nav = navios[key];
 
             let navio = new Konva.Image({
               image: images[key],
@@ -277,7 +286,7 @@
                 if (!resultado.length == 0){
                     let casa = casas[resultado[0]];
                     if(espacoSuficiente(navio.rotation(), nav, casa, casas)){
-                        setRollCasas(navio.rotation(), nav, casa, casas, true);
+                        setRollCasas(navio.rotation(), nav, casa, casas, true, nav.id);
                         if (!navio.inRightPlace) {
                             setNavioPosicionado(nav, true);
                             if(navio.rotation() == 0){//essa variação aqui é por causa que depende se o navio ta em uma posicao diferente
@@ -304,10 +313,7 @@
                         setNavioPosicionado(nav, false);
                     }
                     if (foraDaTela(navio)){
-                        navio.position({
-                        x: 600,
-                        y: 70,
-                        });
+                      voltarPosicaoInicial(navio, nav);
                     }
                 }
             });
@@ -333,7 +339,6 @@
             });
 
             navioLayer.add(navio);
-            listaNavios.push(navio);
           })();
         }
 
@@ -353,9 +358,12 @@
           }
       };
 
+      initNaviosCasas();
       loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
 
     </script>
+
+
   </body>
 </html>
 @endsection
