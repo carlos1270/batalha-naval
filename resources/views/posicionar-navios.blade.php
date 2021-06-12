@@ -1,17 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.posicionar')
 
 @section('content')
 
 
 <!DOCTYPE html>
 <html>
-  <head>
-    <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
-    <meta charset="utf-8" />
-    <title>Batalha Naval Posicionamento</title>
-    <link rel="stylesheet" href="{{asset('css/app.css')}}">
-  </head>
+    <head>
+        <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
+        <meta charset="utf-8" />
+        <title>Batalha Naval Posicionamento</title>
+        <link rel="stylesheet" href="/public/css/posicionar.css">
+    </head>
   <body>
+    <h2>ESCOLHA A POSIÇÃO DOS NAVIOS</h2>
+
     <div id="container"></div>
 
     <div id="casas">
@@ -38,10 +40,6 @@
           </div>
       @endforeach
     </form>
-
-    <div style="position: absolute; top: 55px; right: 200px">
-        <button onclick="setNaviosCasas()">Jogar</button>
-    </div>
 
     <script>
       var telaLargura = 720;
@@ -381,6 +379,20 @@
       loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
 
     </script>
+
+    <div class="buttons">
+        <div class="button-comecar" onclick="setNaviosCasas()">
+            <input href="#" type="button" class="button comecar" value="Começar">
+        </div>
+
+        <div class="button-resetar" onclick="">
+            <input href="#" type="button" class="button resetar" value="Resetar">
+        </div>
+
+        <div class="button-voltar" onclick="">
+            <input href="#" type="button" class="button voltar" value="Voltar">
+        </div>
+    </div>
 
 
   </body>
