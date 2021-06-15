@@ -6,7 +6,7 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title>Posicionamento</title>
 
-        <link href="/css/posicionar.css" rel="stylesheet">
+        <link href="{{asset('css/posicionar.css')}}" rel="stylesheet">
     </head>
     <body>
         @yield('content')
