@@ -4,13 +4,20 @@ body{
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+
 }
 
-
 h2{
-    color: #007fb7;
+    color: #f7f7f7;
     font-size: 2em;
     text-align: center;
+    margin-top: 8rem;
+    font-weight: 500;
+    line-height: 1.2;
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.2rem;
+    text-shadow: 0.1rem 0.1rem 0.8rem black;
 }
 
 h2:after, h2:before{
@@ -18,7 +25,7 @@ h2:after, h2:before{
     display: block;
     width: 200px;
     height: 3px;
-    background: #007fb7;
+    background: white;
     margin: 0 auto;
 }
 
@@ -29,9 +36,9 @@ h2:after, h2:before{
     -moz-appearance: none;
     appearance: none;
     background-color: transparent;
-    border: 2px solid #007fb7;
+    border: 2px solid #f5f5f5;
     border-radius: 0.6em;
-    color: #007fb7;
+    color: #f5fafc;
     cursor: pointer;
     display: -webkit-box;
     display: -webkit-flex;
@@ -43,18 +50,19 @@ h2:after, h2:before{
     font-size: 1rem;
     font-weight: 400;
     line-height: 1;
-    margin: 20px;
+    margin: 30px;
+
     padding: 1.0em 2.6em;
     text-decoration: none;
     text-align: center;
     text-transform: uppercase;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
+
 }
 
-
 .button:hover, .button:focus {
-    color: #d7e2ce;
+    color: #000000;
     outline: 0;
 }
 
@@ -64,13 +72,45 @@ h2:after, h2:before{
 }
 
 .comecar:hover, .resetar:hover, .voltar:hover {
-    box-shadow: 0 0 40px 40px #00929d inset;
+    box-shadow: 0 0 40px 40px #dde8e9 inset;
 }
 
 .button-comecar, .button-resetar, .button-voltar{
     display: inline-block;
     align-items: center;
     justify-content: center;
+    margin: 0;
 }
+
+#img {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center center;
+    transform: translateZ(0);
+    will-change: transform;
+    z-index: -1000;
+}
+
+img{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -100;
+    transform: translateX(-50%) translateY(-50%);
+    background: url("") no-repeat;
+    background-size: cover;
+    transition: 1s opacity;
+    filter: brightness(30%)
+}
+
 
 
