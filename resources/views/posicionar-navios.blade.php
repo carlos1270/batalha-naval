@@ -2,16 +2,22 @@
 
 @section('content')
 
-
 <!DOCTYPE html>
 <html>
     <head>
         <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
         <meta charset="utf-8" />
         <title>Batalha Naval Posicionamento</title>
-        <link rel="stylesheet" href="/public/css/posicionar.css">
+        <link rel="stylesheet" href="{{asset('css/posicionar.css')}}">
     </head>
   <body>
+
+
+    <div class="img background">
+        <img src="/img/battle2.jpg" alt="battle">
+    </div>
+
+
     <h2>ESCOLHA A POSIÇÃO DOS NAVIOS</h2>
 
     <div id="container"></div>
