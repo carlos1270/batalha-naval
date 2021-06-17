@@ -7,18 +7,22 @@
     <head>
         <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
         <meta charset="utf-8" />
-        <title>Batalha Naval Posicionamento</title>
+        <title>Batalha Naval - Posicionamento</title>
         <link rel="stylesheet" href="{{asset('css/posicionar.css')}}">
     </head>
   <body>
 
-
-    <div class="img background">
-        <img src="/img/battle2.jpg" alt="battle">
+    <div class="img-background">
+        <div class="img-wrap">
+            <div id="img">
+                <img src={{asset('img/battle2.jpg')}} alt="battle">
+            </div>
+        </div>
     </div>
 
-
-    <h2>ESCOLHA A POSIÇÃO DOS NAVIOS</h2>
+    <div class="caption text-center">
+        <h2>POSICIONE AS EMBARCAÇÕES</h2>
+    </div>
 
     <div id="container"></div>
 
@@ -47,9 +51,23 @@
       @endforeach
     </form>
 
+    <div class="buttons">
+        <div class="button-comecar" onclick="setNaviosCasas()">
+            <input href="#" type="button" class="button comecar" value="Começar">
+        </div>
+
+        <div class="button-resetar" id = "resetarNavios">
+            <input href="#" type="button" class="button resetar" value="Resetar">
+        </div>
+
+        <div class="button-voltar" onclick="">
+            <input href="#" type="button" class="button voltar" value="Voltar">
+        </div>
+    </div>
+
     <script>
       var telaLargura = 720;
-      var telaAltura = 720;
+      var telaAltura = 615;
       var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
       };
       var casas = {//object pra guardar as casas
@@ -59,6 +77,12 @@
       const espacoDeEncaixe = 28; //pra encaixar o navio na celula
       const anguloDeRotacao = 270; //rotacao de click no navio
       const quantidadeNavios = 5;
+
+      var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
+        container: 'container',
+        width: telaLargura,
+        height: telaAltura,
+      });
 
       function loadImages(sources, callback) { //carrega as imagens definidas em sources e as propriedades de initStage
         var images = {};
@@ -236,7 +260,6 @@
             if(cas.ocupada){
               document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
               document.getElementById('casa_'+cas.id).children[2].value = cas.posicao;
-              console.log(cas);
             }
           };
           document.getElementById('salvar-navios-form').submit();
@@ -244,6 +267,8 @@
           alert('Posicione todos os navios nas casas');
         }
       };
+
+
 
       function voltarPosicaoInicial(navio, nav){
           navio.position({
@@ -265,11 +290,6 @@
       };
 
       function initStage(images) {//inicializa as imagens
-        var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
-          container: 'container',
-          width: telaLargura,
-          height: telaAltura,
-        });
         var navioLayer = new Konva.Layer();
 
         for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
@@ -297,6 +317,8 @@
               x: nav.x,
               y: nav.y,
               draggable: true,
+              name: 'navio',
+              id: ''+key,
             });
 
             navio.on('dragstart', function () {
@@ -381,25 +403,24 @@
           }
       };
 
+      document.getElementById('resetarNavios').addEventListener(
+        'click',
+        function () {
+            let imagesNavios = stage.find('.navio');
+            for(let key in imagesNavios){
+                navio = imagesNavios[key];
+                let nav = navios[navio.id()];
+                limparRollCasas(navio.rotation(), navio, nav, casas);
+                voltarPosicaoInicial(navio, nav);
+            }
+        },
+        false
+      );
+
       initNaviosCasas();
       loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
 
     </script>
-
-    <div class="buttons">
-        <div class="button-comecar" onclick="setNaviosCasas()">
-            <input href="#" type="button" class="button comecar" value="Começar">
-        </div>
-
-        <div class="button-resetar" onclick="">
-            <input href="#" type="button" class="button resetar" value="Resetar">
-        </div>
-
-        <div class="button-voltar" onclick="">
-            <input href="#" type="button" class="button voltar" value="Voltar">
-        </div>
-    </div>
-
 
   </body>
 </html>
