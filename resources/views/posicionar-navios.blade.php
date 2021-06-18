@@ -2,23 +2,17 @@
 
 @section('content')
 
-<!DOCTYPE html>
-<html>
-    <head>
-        <script src="https://unpkg.com/konva@8.0.4/konva.min.js"></script>
-        <meta charset="utf-8" />
-        <title>Batalha Naval Posicionamento</title>
-        <link rel="stylesheet" href="{{asset('css/posicionar.css')}}">
-    </head>
-  <body>
-
-
-    <div class="img background">
-        <img src="/img/battle2.jpg" alt="battle">
+    <div class="img-background">
+        <div class="img-wrap">
+            <div id="img">
+                <img src={{asset('img/battle2.jpg')}} alt="battle">
+            </div>
+        </div>
     </div>
 
-
-    <h2>ESCOLHA A POSIÇÃO DOS NAVIOS</h2>
+    <div class="caption text-center">
+        <h2>POSICIONE AS EMBARCAÇÕES</h2>
+    </div>
 
     <div id="container"></div>
 
@@ -47,9 +41,23 @@
       @endforeach
     </form>
 
+    <div class="buttons">
+        <div class="button-comecar" onclick="setNaviosCasas()">
+            <input href="#" type="button" class="button comecar" value="Começar">
+        </div>
+
+        <div class="button-resetar" id = "resetarNavios">
+            <input href="#" type="button" class="button resetar" value="Resetar">
+        </div>
+
+        <div class="button-voltar" onclick="">
+            <input href="" type="button" class="button voltar" value="Voltar">
+        </div>
+    </div>
+
     <script>
-      var telaLargura = 720;
-      var telaAltura = 720;
+      var telaLargura = 930;
+      var telaAltura = 615;
       var navios = {//aqui defini onde os navios vao spawnar na tela e a posicao
       };
       var casas = {//object pra guardar as casas
@@ -60,8 +68,14 @@
       const anguloDeRotacao = 270; //rotacao de click no navio
       const quantidadeNavios = 5;
 
+      var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
+        container: 'container',
+        width: telaLargura,
+        height: telaAltura,
+      });
+      var images = {};
+
       function loadImages(sources, callback) { //carrega as imagens definidas em sources e as propriedades de initStage
-        var images = {};
         var loadedImages = 0;
         var numImages = 0;
         for (let src in sources) {
@@ -236,7 +250,6 @@
             if(cas.ocupada){
               document.getElementById('casa_'+cas.id).children[1].value = cas.navio;
               document.getElementById('casa_'+cas.id).children[2].value = cas.posicao;
-              console.log(cas);
             }
           };
           document.getElementById('salvar-navios-form').submit();
@@ -244,6 +257,8 @@
           alert('Posicione todos os navios nas casas');
         }
       };
+
+
 
       function voltarPosicaoInicial(navio, nav){
           navio.position({
@@ -265,11 +280,6 @@
       };
 
       function initStage(images) {//inicializa as imagens
-        var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
-          container: 'container',
-          width: telaLargura,
-          height: telaAltura,
-        });
         var navioLayer = new Konva.Layer();
 
         for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
@@ -289,7 +299,7 @@
 
         for (let key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
           (function () {
-            let privKey = key;
+            var privKey = key;
             let nav = navios[key];
 
             let navio = new Konva.Image({
@@ -297,11 +307,14 @@
               x: nav.x,
               y: nav.y,
               draggable: true,
+              name: 'navio',
+              id: ''+key,
             });
 
             navio.on('dragstart', function () {
               this.moveToTop();
               limparRollCasas(navio.rotation(), navio, nav, casas);
+              setNavioPosicionado(nav, false);
             });
 
             navio.on('dragend', function () { //função pra quando arrastar, fazer o encaixe certinho
@@ -317,21 +330,26 @@
                                     x: casa.x+(5),
                                     y: casa.y+(5),
                                 });
+                                navio.image(images[privKey+'glow']);
                             }else{
                                 navio.position({
                                     x: casa.x+(5),
                                     y: casa.y+espacoDeEncaixe+15,
                                 });
+                                navio.image(images[privKey+'glow']);
                             }
                         }else{
                             if(getNavioPosicionado(nav)){
                                 setNavioPosicionado(nav, false);
+                                navio.image(images[privKey]);
                             }
                         }
                     }else{
                         voltarPosicaoInicial(navio, nav);
+                        navio.image(images[privKey]);
                     }
                 }else{
+                    navio.image(images[privKey]);
                     if(getNavioPosicionado(nav)){
                         setNavioPosicionado(nav, false);
                     }
@@ -341,7 +359,6 @@
                 }
             });
             navio.on('mouseout', function () {
-              navio.image(images[privKey]);
               document.body.style.cursor = 'default';
             });
 
@@ -354,9 +371,11 @@
                 limparRollCasas(navio.rotation(), navio, nav, casas);
                 if(navio.rotation() == anguloDeRotacao){
                     navio.rotation(0)
+                    navio.image(images[privKey]);
                     navioLayer.draw();
                 }else{
                     navio.rotation(anguloDeRotacao);
+                    navio.image(images[privKey]);
                     navioLayer.draw();
                 };
             });
@@ -369,11 +388,17 @@
       }
 
       var sources = {//source de onde fica os navios
+        navio1: '{{asset('img/navios/portaaviao.png')}}',
+        navio2: '{{asset('img/navios/guerra.png')}}',
+        navio3: '{{asset('img/navios/encouracado.png')}}',
+        navio4: '{{asset('img/navios/encouracado.png')}}',
+        navio5: '{{asset('img/navios/submarino.png')}}',
+        navio1glow: '{{asset('img/navios/portaaviaoglow.png')}}',
+        navio2glow: '{{asset('img/navios/guerraglow.png')}}',
+        navio3glow: '{{asset('img/navios/encouracadoglow.png')}}',
+        navio4glow: '{{asset('img/navios/encouracadoglow.png')}}',
+        navio5glow: '{{asset('img/navios/submarinoglow.png')}}',
       };
-
-      for(let i = 1; i <= quantidadeNavios; i++){
-          sources['navio'+i] = '{{asset('img/navios/navioS.png')}}';
-      }
 
       for(let i = 1; i <= tamanhoTabuleiro; i++){//cria um source pra cada casa e coloca em sources
           for(let j = 1; j <= tamanhoTabuleiro; j++){
@@ -381,26 +406,24 @@
           }
       };
 
+      document.getElementById('resetarNavios').addEventListener(
+        'click',
+        function () {
+            let imagesNavios = stage.find('.navio');
+            for(let key in imagesNavios){
+                navio = imagesNavios[key];
+                let nav = navios[navio.id()];
+                limparRollCasas(navio.rotation(), navio, nav, casas);
+                setNavioPosicionado(nav, false);
+                navio.image(images[navio.id()]);
+                voltarPosicaoInicial(navio, nav);
+            }
+        },
+        false
+      );
+
       initNaviosCasas();
       loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
 
     </script>
-
-    <div class="buttons">
-        <div class="button-comecar" onclick="setNaviosCasas()">
-            <input href="#" type="button" class="button comecar" value="Começar">
-        </div>
-
-        <div class="button-resetar" onclick="">
-            <input href="#" type="button" class="button resetar" value="Resetar">
-        </div>
-
-        <div class="button-voltar" onclick="">
-            <input href="#" type="button" class="button voltar" value="Voltar">
-        </div>
-    </div>
-
-
-  </body>
-</html>
 @endsection
