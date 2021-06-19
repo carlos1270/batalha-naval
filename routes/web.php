@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JogoController;
+use App\Http\Controllers\CasaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,5 @@ Route::get('/', [JogoController::class, 'index'])->name('index');
 Route::get('/novo-jogo', [JogoController::class, 'criarJogo'])->name('jogo.new');
 Route::post('/salvar-navios', [JogoController::class, 'salvarNaviosUser'])->name('save.navios');
 Route::get('/jogar/{id}', [JogoController::class, 'jogar'])->name('jogar');
+
+Route::get('/checar-acerto', [CasaController::class, 'checarTiro'])->name('atirar');
