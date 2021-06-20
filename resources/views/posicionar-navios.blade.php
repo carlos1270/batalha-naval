@@ -279,9 +279,8 @@
         };
       };
 
-      function initStage(images) {//inicializa as imagens
-        var navioLayer = new Konva.Layer();
-
+      function initStageCasas(images){
+        var casaLayer = new Konva.Layer();
         for (let key in casas) {//iterar sobre os objects casas pra adicionar a imagem relacionada e a posicao
           (function () {
             let imageObj = images[key];
@@ -293,10 +292,14 @@
               y: cas.y,
             });
 
-            navioLayer.add(casa);
+            casaLayer.add(casa);
           })();
         }
+        stage.add(casaLayer);
+      };
 
+      function initStageNavios(images) {//inicializa as imagens
+        var navioLayer = new Konva.Layer();
         for (let key in navios) {//faz o mesmo pros navios, itera sobre eles e cria o objeto do tipo Image do Konva pra colocar o navio
           (function () {
             var privKey = key;
@@ -358,6 +361,10 @@
                     }
                 }
             });
+            navio.on('mouseover', function () {
+              document.body.style.cursor = 'pointer';
+            });
+
             navio.on('mouseout', function () {
               document.body.style.cursor = 'default';
             });
@@ -387,7 +394,7 @@
         stage.add(navioLayer);
       }
 
-      var sources = {//source de onde fica os navios
+      var naviosSources = {//source de onde fica os navios
         navio1: '{{asset('img/navios/portaaviao.png')}}',
         navio2: '{{asset('img/navios/guerra.png')}}',
         navio3: '{{asset('img/navios/encouracado.png')}}',
@@ -400,9 +407,11 @@
         navio5glow: '{{asset('img/navios/submarinoglow.png')}}',
       };
 
+      var casasSources = {};
+
       for(let i = 1; i <= tamanhoTabuleiro; i++){//cria um source pra cada casa e coloca em sources
           for(let j = 1; j <= tamanhoTabuleiro; j++){
-            sources['casa'+i+'x'+j] = '{{asset('img/cell_board.png')}}';
+            casasSources['casa'+i+'x'+j] = '{{asset('img/cell_board.png')}}';
           }
       };
 
@@ -411,7 +420,7 @@
         function () {
             let imagesNavios = stage.find('.navio');
             for(let key in imagesNavios){
-                navio = imagesNavios[key];
+                let navio = imagesNavios[key];
                 let nav = navios[navio.id()];
                 limparRollCasas(navio.rotation(), navio, nav, casas);
                 setNavioPosicionado(nav, false);
@@ -423,7 +432,8 @@
       );
 
       initNaviosCasas();
-      loadImages(sources, initStage);//carrega o stage pra iniciar os bagulhos
+      loadImages(casasSources, initStageCasas);//carrega o stage pra iniciar os bagulhos
+      loadImages(naviosSources, initStageNavios);//carrega o stage pra iniciar os bagulhos
 
     </script>
 @endsection
