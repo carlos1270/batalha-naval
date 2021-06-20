@@ -15,7 +15,7 @@ class CasaController extends Controller
     public const GANHOU = 313;
 
     public function checarTiro(Request $request) {
-        $casa = Casa::find($request->id);
+        $casa = Casa::find($request->casa_id);
         $casa->acertado = true;
         $casa->update();
 
@@ -37,9 +37,9 @@ class CasaController extends Controller
                     $msg = "Ganhou";
                 }
             }
-        } 
+        }
 
-        return response($msg, $codigoRetorno);
+        return response($casa, $codigoRetorno);
     }
 
     public function checarAfundado(Navio $navio) {
@@ -72,7 +72,7 @@ class CasaController extends Controller
 
         if ($count == $navios->count()) {
             return true;
-        }   
+        }
         return false;
     }
 }
