@@ -7,10 +7,6 @@
     <div id="casasTabuleiroCOM">
         @foreach ($jogo->tabuleiros[1]->casas as $casa)
             <input type="hidden" id="casaCOM{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->id}}">
-            <input type="hidden" id="casaCOMPreenchido{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->preenchido}}">
-            <input type="hidden" id="casaCOMAcertado{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->acertado}}">
-            <input type="hidden" id="casaCOMNavio{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->navio_id}}">
-            <input type="hidden" id="casaCOMPosicao{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->posicao_do_navio}}">
         @endforeach
     </div>
 
@@ -81,10 +77,12 @@
             }
         };
 
-        function loadNavioAfundado(sourceNavio, navio, cas){
+        function loadNavioAfundado(sourceNavio, navio, cas, nav){
             images[sourceNavio] = new Image();
             images[sourceNavio].onload = function(){
                 navio.image(images[sourceNavio]);
+                navio.setX(nav.x);
+                navio.setY(nav.y);
                 navio.rotation(getRotacaoNavio(cas));
             }
             stage.add(navioLayer);
@@ -94,7 +92,7 @@
         function initNaviosCasas(){
             for(let i = 1; i <= tamanhoTabuleiro; i++){ //criacao das casas
                 for(let j = 1; j <= tamanhoTabuleiro; j++){
-                    casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: document.getElementById('casaCOMPreenchido'+j+'x'+i).value, navio: document.getElementById('casaCOMNavio'+j+'x'+i).value, id: document.getElementById('casaCOM'+j+'x'+i).value, posicao: document.getElementById('casaCOMPosicao'+j+'x'+i).value, acertado: false,}; //cria as casas dando espaco e nome unico
+                    casas['casa'+j+'x'+i] = {x: espacoEntreCasas*i, y: espacoEntreCasas*j, linha: j, coluna: i, ocupada: "0", navio: "", id: document.getElementById('casaCOM'+j+'x'+i).value, posicao: "-1", acertado: false,}; //cria as casas dando espaco e nome unico
                 }
             };
             for(let i = 1; i <= quantidadeNavios; i++){
@@ -162,18 +160,35 @@
             }
         };
 
-        function setNaviosPosicoes(){
-            for(let key in navios){
-                let cas = getCasa(navios[key]);
-                let angulo = getRotacaoNavio(cas);
-                if(angulo == 0){
-                    navios[key].x = cas.x+5;
-                    navios[key].y = cas.y+5;
-                }else{
-                    navios[key].x = cas.x+5;
-                    navios[key].y = cas.y+espacoDeEncaixe+15;
+        function getCasaPlot(cas, nav, angulo){
+            if(angulo == 0){
+                for(let key in casas){
+                    let casatemp = casas[key];
+                    if(casatemp.navio == cas.navio && casatemp.posicao == 1){
+                        return casatemp;
+                    }
+                }
+            }else{
+                for(let key in casas){
+                    let casatemp = casas[key];
+                    if(casatemp.navio == cas.navio && casatemp.posicao == nav.tamanho){
+                        return casatemp;
+                    }
                 }
             }
+        };
+
+        function setNaviosPosicoes(cas){
+                let nav = getNavio(cas);
+                let angulo = getRotacaoNavio(cas);
+                let casatemp = getCasaPlot(cas, nav, angulo);
+                if(angulo == 0){
+                    nav.x = casatemp.x+5;
+                    nav.y = casatemp.y+5;
+                }else{
+                    nav.x = casatemp.x+5;
+                    nav.y = casatemp.y+espacoDeEncaixe+15;
+                }
         };
 
         function navioAtingido(cas){
@@ -184,7 +199,7 @@
         function afundarNavio(cas){
             let nav = getNavio(cas);
             if(nav.vida == 0){
-                loadNavioAfundado(getNavioSource(nav), getNavioKonva(nav), cas);
+                loadNavioAfundado(getNavioSource(nav), getNavioKonva(nav), cas, nav);
             }
         };
 
@@ -234,13 +249,44 @@
                     casa.on('click', function() {
                         if(!cas.acertado){
                             cas.acertado = true;
-                            if(cas.ocupada == "1"){
-                                casa.image(images['cell_board_bomb']);
-                                navioAtingido(cas);
-                                afundarNavio(cas);
-                            }else{
-                                casa.image(images['cell_board_water']);
-                            }
+                            $.ajax({
+                                url: "{{route('atirar')}}",
+                                type: "GET",
+                                data: {
+                                    casa_id:    cas.id,
+                                },
+                                statusCode: {
+                                    310: function(data){
+                                        casa.image(images['cell_board_water']);
+                                    },
+                                    311: function(data){
+                                        cas.navio = data.responseJSON.navio_id;
+                                        cas.posicao = data.responseJSON.posicao_do_navio;
+                                        cas.ocupada = "1";
+                                        casa.image(images['cell_board_bomb']);
+
+                                        navioAtingido(cas);
+                                    },
+                                    312: function(data){
+                                        cas.navio = data.responseJSON.navio_id;
+                                        cas.posicao = data.responseJSON.posicao_do_navio;
+                                        cas.ocupada = "1";
+                                        casa.image(images['cell_board_bomb']);
+                                        setNaviosPosicoes(cas);
+                                        navioAtingido(cas);
+                                        afundarNavio(cas);
+                                    },
+                                    313: function(data){
+                                        cas.navio = data.responseJSON.navio_id;
+                                        cas.posicao = data.responseJSON.posicao_do_navio;
+                                        cas.ocupada = "1";
+                                        casa.image(images['cell_board_bomb']);
+                                        setNaviosPosicoes(cas);
+                                        navioAtingido(cas);
+                                        afundarNavio(cas);
+                                    },
+                                },
+                            })
                         }else{
                             alert("Casa já acertada");
                         }
@@ -267,7 +313,6 @@
         };
 
         initNaviosCasas();
-        setNaviosPosicoes();
         loadImages(casasSources, initStageCasas);//carrega o stage pra iniciar os bagulhos
         initStageNavios();
 
