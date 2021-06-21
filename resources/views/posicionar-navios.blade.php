@@ -142,7 +142,7 @@
         if (valor) {
           for(let i = 0; i < getNavioTamanho(nav); i++){
             let cas = casas['casa'+(getLinhaCasa(casa)-i)+'x'+getColunaCasa(casa)];
-            setCasaOcupada(cas, valor, id_navio, (i+1));
+            setCasaOcupada(cas, valor, id_navio, getNavioTamanho(nav)-i);
           }
         } else {
           for(let i = 0; i < getNavioTamanho(nav); i++){
