@@ -1,8 +1,28 @@
-@extends('layouts.app')
+@extends('layouts.jogar-template')
 
 @section('content')
 
-    <div id="container"></div>
+    <div class="titulo-jogador">
+        <h1>JOGADOR</h1>
+    </div>
+
+    <div class="titulo-vs">
+        <h1>VS</h1>
+    </div>
+
+    <div class="titulo-com">
+        <h1>COM</h1>
+    </div>
+
+    <div class="img-background">
+        <div class="img-wrap">
+            <div id="img">
+                <img src={{asset('img/battle2.jpg')}} alt="battle">
+            </div>
+        </div>
+    </div>
+
+    <div id="container" class="cont"></div>
 
     <div id="casasTabuleiroCOM">
         @foreach ($jogo->tabuleiros[1]->casas as $casa)

@@ -14,15 +14,29 @@
         <h2>POSICIONE AS EMBARCAÇÕES</h2>
     </div>
 
-    <div id="container"></div>
+    <div class="buttons">
+        <div class="button-comecar" onclick="setNaviosCasas()">
+            <input href="#" type="button" class="button comecar" value="Começar">
+        </div>
 
-    <div id="casas">
+        <div class="button-resetar" id = "resetarNavios">
+            <input href="#" type="button" class="button resetar" value="Resetar">
+        </div>
+
+        <div class="button-voltar" onclick="">
+            <input href="" type="button" class="button voltar" value="Voltar">
+        </div>
+    </div>
+
+    <div id="container" class="config"></div>
+
+    <div id="casas" class="classHouse">
         @foreach ($jogo->tabuleiros[0]->casas as $casa)
             <input type="hidden" id="casa{{$casa->linha}}x{{$casa->coluna}}" value="{{$casa->id}}">
         @endforeach
     </div>
 
-    <div id="navios">
+    <div id="navios" class="classNavios">
         @foreach ($jogo->tabuleiros[0]->navios as $i => $navio)
             <input type="hidden" id="navio{{$i+1}}" value="{{$navio->id}}">
             <input type="hidden" id="tamanho_navio{{$i+1}}" value="{{$navio->tamanho}}">
@@ -40,20 +54,6 @@
           </div>
       @endforeach
     </form>
-
-    <div class="buttons">
-        <div class="button-comecar" onclick="setNaviosCasas()">
-            <input href="#" type="button" class="button comecar" value="Começar">
-        </div>
-
-        <div class="button-resetar" id = "resetarNavios">
-            <input href="#" type="button" class="button resetar" value="Resetar">
-        </div>
-
-        <div class="button-voltar" onclick="">
-            <input href="" type="button" class="button voltar" value="Voltar">
-        </div>
-    </div>
 
     <script>
       var telaLargura = 930;
