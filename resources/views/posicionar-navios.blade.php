@@ -28,7 +28,6 @@
         </div>
     </div>
 
-
     <div id="container" class="config"></div>
 
     <div id="casas" class="classHouse">
@@ -55,8 +54,6 @@
           </div>
       @endforeach
     </form>
-
-
 
     <script>
       var telaLargura = 930;

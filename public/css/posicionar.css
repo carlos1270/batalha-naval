@@ -26,6 +26,11 @@ body{
     margin-right: 5px;
 }
 
+.caption {
+    position: absolute;
+    width: 100%;
+}
+
 h2{
     color: #f7f7f7;
     margin-top: 0rem;
