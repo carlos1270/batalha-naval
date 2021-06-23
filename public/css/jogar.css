@@ -64,3 +64,8 @@ img{
     transition: 1s opacity;
     filter: brightness(30%)
 }
+
+.titulo-jogador-vs-com{
+    margin-bottom: -100px;
+    margin-top: -50px;
+}

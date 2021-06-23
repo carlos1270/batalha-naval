@@ -1,17 +1,18 @@
 @extends('layouts.jogar-template')
 
 @section('content')
+    <div class="titulo-jogador-vs-com">
+        <div class="titulo-jogador">
+            <h1>JOGADOR</h1>
+        </div>
 
-    <div class="titulo-jogador">
-        <h1>JOGADOR</h1>
-    </div>
+        <div class="titulo-vs">
+            <h1>VS</h1>
+        </div>
 
-    <div class="titulo-vs">
-        <h1>VS</h1>
-    </div>
-
-    <div class="titulo-com">
-        <h1>COM</h1>
+        <div class="titulo-com">
+            <h1>COM</h1>
+        </div>
     </div>
 
     <div class="img-background">
@@ -49,6 +50,27 @@
             <input type="hidden" id="tamanho_navioPlayer{{$i+1}}" value="{{$navio->tamanho}}">
         @endforeach
     </div>
+
+    <!-- Modal 
+    <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Você Ganhou !!!
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='index.blade.php'">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>-->
 
     <script>
         var telaLargura = 1280;
@@ -332,6 +354,7 @@
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
                                             navioAtingido(cas, naviosCOM);
                                             afundarNavio(cas, naviosCOM, casasCOM);
+                                            alert('Voçê Ganhou!')
                                         },
                                     },
                                 });
@@ -399,6 +422,7 @@
                         setNaviosPosicoes(cas, naviosPlayer, casasPlayer);
                         navioAtingido(cas, naviosPlayer);
                         afundarNavio(cas, naviosPlayer, casasPlayer);
+                        alert('Você Perdeu!')
                     },
                 },
             })
