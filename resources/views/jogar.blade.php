@@ -51,7 +51,7 @@
         @endforeach
     </div>
 
-    <!-- Modal 
+    <!-- Modal
     <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -73,8 +73,8 @@
     </div>-->
 
     <script>
-        var telaLargura = 1280;
-        var telaAltura = 615;
+        var telaLargura = 1380;
+        var telaAltura = 800;
         var naviosCOM = {//aqui defini onde os navios vao spawnar na tela e a posicao
         };
         var naviosPlayer = {
@@ -150,6 +150,30 @@
             }
             stage.add(navioLayer);
             images[sourceNavio].src = naviosSources[sourceNavio];
+        };
+
+        function loadBordaTabuleiro(){
+            images['borda_tabuleiro'] = new Image();
+            images['borda_tabuleiro'].onload = function(){
+                var bordaTabuleiro = new Konva.Image({
+                    image: images['borda_tabuleiro'],
+                    x: 5,
+                    y: 17,
+                    width: espacoEntreCasas*(tamanhoTabuleiro+(1.9)),
+                    height: espacoEntreCasas*(tamanhoTabuleiro+(1.4)),
+                    name: 'tabuleiro',
+                });
+                casaLayer.add(bordaTabuleiro);
+            }
+            images['borda_tabuleiro'].src = '{{asset('img/borda_tabuleiro.png')}}';
+        };
+
+        function atualizarTabuleiro(posicaoX){
+            let tabuleiroImage = stage.find('.tabuleiro');
+            for(let key in tabuleiroImage){
+                let tabu = tabuleiroImage[key];
+                tabu.setX(posicaoX);
+            }
         };
 
         function initNaviosCasas(){
@@ -328,6 +352,7 @@
                                         310: function(data){
                                             casa.image(images['cell_board_water']);
                                             vezDoJogador = false;
+                                            atualizarTabuleiro(665);
                                             realizarJogadaCOM();
                                         },
                                         311: function(data){
@@ -354,7 +379,7 @@
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
                                             navioAtingido(cas, naviosCOM);
                                             afundarNavio(cas, naviosCOM, casasCOM);
-                                            alert('Voçê Ganhou!')
+                                            alert('Você Ganhou!')
                                         },
                                     },
                                 });
@@ -395,6 +420,7 @@
                     310: function(data){
                         casa.image(images['cell_board_water']);
                         vezDoJogador = true;
+                        atualizarTabuleiro(5);
                     },
                     311: function(data){
                         cas.navio = data.responseJSON.navio_id;
@@ -460,6 +486,7 @@
         };
 
         initNaviosCasas();
+        loadBordaTabuleiro();
         loadImages(casasSources, initStageCasasCOM);//carrega o stage pra iniciar os bagulhos
         loadImages(casasSources, initStageCasasPlayer);//carrega o stage pra iniciar os bagulhos
         initStageNavios(naviosCOM);
