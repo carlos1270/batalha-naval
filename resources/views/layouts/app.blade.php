@@ -17,7 +17,7 @@
     <audio id="background-sound" controls loop muted autoplay hidden>
         <source src="{{asset('audio/world-of-warship.mp3')}}" type="audio/mpeg">
     </audio>
-    0
+
     <script>
         var bgaudio = document.getElementById("background-sound");
 

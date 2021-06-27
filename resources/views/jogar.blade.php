@@ -51,6 +51,12 @@
         @endforeach
     </div>
 
+    <audio id="background-sound" controls loop muted autoplay hidden>
+        <source src="{{asset('audio/suspense02.mp3')}}" type="audio/mpeg">
+    </audio>
+
+    <button onclick="enableMute()">Som</button>
+
     <!-- Modal
     <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -85,6 +91,8 @@
         };
         var vezDoJogador = true;
         var casasDisponiveis = []; //para o COM jogar
+        var ganhou = false;
+        var bgaudio = document.getElementById("background-sound");
 
         const tamanhoTabuleiro = 10;
         const espacoEntreCasas = 55; //relativo ao tamanho em pixels da celula
@@ -109,6 +117,79 @@
             navio4: '{{asset('img/navios/encouracado.png')}}',
             navio5: '{{asset('img/navios/submarino.png')}}',
         };
+
+        var sonsEspeciais = {
+            somAgua: new Howl({
+                src: [
+                    '{{asset('audio/agua.mp3')}}',
+                ]
+            }),
+            somAguaCOM: new Howl({
+                src: [
+                    '{{asset('audio/agua.mp3')}}',
+                ]
+            }),
+            somBomba: new Howl({
+                src: [
+                    '{{asset('audio/bomba.mp3')}}',
+                ]
+            }),
+            somBomba: new Howl({
+                src: [
+                    '{{asset('audio/bomba.mp3')}}',
+                ]
+            }),
+            somBombardeio: new Howl({
+                src: [
+                    '{{asset('audio/bombardeio.mp3')}}',
+                ]
+            }),
+            somBuzina: new Howl({
+                src: [
+                    '{{asset('audio/buzinaembarcacao.mp3')}}',
+                ]
+            }),
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function desabilitarJogador(vezDoCom){
+            if(!vezDoCom){
+                vezDoJogador = false;
+                return true;
+            }
+            return false;
+        }
+
+        function habilitarJogador(vezTemp){
+            if(vezTemp){
+                vezDoJogador = true;
+            }else{
+                if(!ganhou){
+                    realizarJogadaCOM();
+                }
+            }
+        }
+
+        async function reproduzirBombardeioCompleto(nav, vezDoCom){
+            let vezTemp = desabilitarJogador(vezDoCom);
+            for(let k = 0; k < nav.tamanho; k++){
+                sonsEspeciais.somBombardeio.play();
+                await sleep(900)
+            }
+            habilitarJogador(vezTemp);
+        }
+
+        function enableMute() {
+            if (bgaudio.muted){
+                sonsEspeciais.somBuzina.play();
+                bgaudio.muted = false;
+            } else {
+                bgaudio.muted = true;
+            }
+        }
 
         function getNavioSource(nav){
             switch(nav.tamanho){
@@ -289,10 +370,11 @@
             nav.vida -= 1;
         };
 
-        function afundarNavio(cas, navios, casas){
+        function afundarNavio(cas, navios, casas, vezDoCom){
             let nav = getNavio(cas, navios);
             if(nav.vida == 0){
                 loadNavioAfundado(getNavioSource(nav), getNavioKonva(nav, navios), cas, nav, casas, navios);
+                reproduzirBombardeioCompleto(nav, vezDoCom);
             }
         };
 
@@ -350,36 +432,48 @@
                                     },
                                     statusCode: {
                                         310: function(data){
-                                            casa.image(images['cell_board_water']);
                                             vezDoJogador = false;
-                                            atualizarTabuleiro(665);
-                                            realizarJogadaCOM();
+                                            casa.image(images['cell_board_water']);
+                                            sonsEspeciais.somAgua.play();
+                                            sleep(1000)
+                                                .then(()=> {atualizarTabuleiro(665); })
+                                                .then(()=> {realizarJogadaCOM(); })
                                         },
                                         311: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
-                                            navioAtingido(cas, naviosCOM);
+                                            sonsEspeciais.somBomba.play();
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
                                         },
                                         312: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
+                                            let vezTemp = desabilitarJogador(false);
+                                            sonsEspeciais.somBomba.play();
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
-                                            navioAtingido(cas, naviosCOM);
-                                            afundarNavio(cas, naviosCOM, casasCOM);
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
+                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, false); })
                                         },
                                         313: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
+                                            sonsEspeciais.somBomba.play();
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
-                                            navioAtingido(cas, naviosCOM);
-                                            afundarNavio(cas, naviosCOM, casasCOM);
-                                            alert('Você Ganhou!')
+                                            ganhou = true;
+                                            vezDoJogador = false;
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
+                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, false); })
+                                                .then(()=> {alert('Você Ganhou!'); })
+
                                         },
                                     },
                                 });
@@ -419,36 +513,45 @@
                 statusCode: {
                     310: function(data){
                         casa.image(images['cell_board_water']);
-                        vezDoJogador = true;
-                        atualizarTabuleiro(5);
+                        sonsEspeciais.somAguaCOM.play();
+                        sleep(1000)
+                            .then(()=> {atualizarTabuleiro(5); })
+                            .then(()=> {vezDoJogador = true; })
                     },
                     311: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
-                        navioAtingido(cas, naviosPlayer);
-                        realizarJogadaCOM();
+                        sonsEspeciais.somBomba.play();
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {realizarJogadaCOM(); })
                     },
                     312: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
+                        sonsEspeciais.somBomba.play();
                         setNaviosPosicoes(cas, naviosPlayer, casasPlayer);
-                        navioAtingido(cas, naviosPlayer);
-                        afundarNavio(cas, naviosPlayer, casasPlayer);
-                        realizarJogadaCOM();
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {afundarNavio(cas, naviosPlayer, casasPlayer, true); })
                     },
                     313: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
+                        sonsEspeciais.somBomba.play();
                         setNaviosPosicoes(cas, naviosPlayer, casasPlayer);
-                        navioAtingido(cas, naviosPlayer);
-                        afundarNavio(cas, naviosPlayer, casasPlayer);
-                        alert('Você Perdeu!')
+                        ganhou = true;
+                        vezDoJogador = false;
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {afundarNavio(cas, naviosPlayer, casasPlayer, true); })
+                            .then(()=> {alert('Você Perdeu!'); })
                     },
                 },
             })
