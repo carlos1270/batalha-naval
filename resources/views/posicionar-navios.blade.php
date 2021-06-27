@@ -26,6 +26,10 @@
         <div class="button-voltar" onclick="">
             <input href="" type="button" class="button voltar" value="Voltar">
         </div>
+
+        <div class="button-voltar" onclick="enableMute()">
+            <input href="" type="button" class="button voltar" value="Som">
+        </div>
     </div>
 
     <div id="container" class="config"></div>
@@ -55,6 +59,10 @@
       @endforeach
     </form>
 
+    <audio id="background-sound" controls loop muted autoplay hidden>
+        <source src="{{asset('audio/suspense.mp3')}}" type="audio/mpeg">
+    </audio>
+
     <script>
       var telaLargura = 930;
       var telaAltura = 615;
@@ -67,6 +75,9 @@
       const espacoDeEncaixe = 28; //pra encaixar o navio na celula
       const anguloDeRotacao = 270; //rotacao de click no navio
       const quantidadeNavios = 5;
+
+      var somPop = new loadSound('{{asset('audio/pop.mp3')}}');
+      var somPopPlace = new loadSound('{{asset('audio/pop.mp3')}}');
 
       var stage = new Konva.Stage({//stage padrao pra jogar os elementos na tela
         container: 'container',
@@ -91,6 +102,31 @@
           images[src].src = sources[src];
         }
       };
+
+        function loadSound(src) {
+            this.sound = document.createElement("audio");
+            this.sound.src = src;
+            this.sound.setAttribute("preload", "auto");
+            this.sound.setAttribute("controls", "none");
+            this.sound.style.display = "none";
+            document.body.appendChild(this.sound);
+            this.play = function(){
+                this.sound.play();
+            }
+            this.stop = function(){
+                this.sound.pause();
+            }
+        }
+
+        var bgaudio = document.getElementById("background-sound");
+
+        function enableMute() {
+            if (bgaudio.muted){
+                bgaudio.muted = false;
+            } else {
+                bgaudio.muted = true;
+            }
+        }
 
       function getCasasProximo(angulo, navio, casas){//Pega a casa mais proxima do navio pra fazer o encaixe, se existir uma
           let selecionada = [];
@@ -334,12 +370,14 @@
                                     y: casa.y+(5),
                                 });
                                 navio.image(images[privKey+'glow']);
+                                somPopPlace.play();
                             }else{
                                 navio.position({
                                     x: casa.x+(5),
                                     y: casa.y+espacoDeEncaixe+15,
                                 });
                                 navio.image(images[privKey+'glow']);
+                                somPopPlace.play();
                             }
                         }else{
                             if(getNavioPosicionado(nav)){
@@ -370,6 +408,7 @@
             });
 
             navio.on('dragmove', function () {
+              somPop.play();
               document.body.style.cursor = 'pointer';
             });
 
