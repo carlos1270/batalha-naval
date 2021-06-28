@@ -27,8 +27,9 @@
             <input href="#" type="button" class="button voltar" value="Voltar">
         </div>
 
-        <div class="button-som" onclick="">
-            <input href="" type="button" class="button sound" value="Som">
+
+        <div class="button-voltar" onclick="enableMute()">
+            <input href="" type="button" class="button voltar" value="Som">
         </div>
     </div>
 
