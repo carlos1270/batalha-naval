@@ -1,17 +1,18 @@
 @extends('layouts.jogar-template')
 
 @section('content')
+    <div class="titulo-jogador-vs-com">
+        <div class="titulo-jogador">
+            <h1>JOGADOR</h1>
+        </div>
 
-    <div class="titulo-jogador">
-        <h1>JOGADOR</h1>
-    </div>
+        <div class="titulo-vs">
+            <h1>VS</h1>
+        </div>
 
-    <div class="titulo-vs">
-        <h1>VS</h1>
-    </div>
-
-    <div class="titulo-com">
-        <h1>COM</h1>
+        <div class="titulo-com">
+            <h1>COM</h1>
+        </div>
     </div>
 
     <div class="img-background">
@@ -50,9 +51,39 @@
         @endforeach
     </div>
 
+    <audio id="background-sound" controls loop muted autoplay hidden>
+        <source src="{{asset('audio/suspense02.mp3')}}" type="audio/mpeg">
+    </audio>
+
+    <!-- <button onclick="enableMute()" class="button sound" type="button" href="#">Som</button> -->
+    <div class="button-som" onclick="enableMute()">
+        <input href="#" type="button" class="button sound" value="Som">
+    </div>
+
+    <!-- Modal
+    <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              Você Ganhou !!!
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="location.href='index.blade.php'">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>-->
+
     <script>
-        var telaLargura = 1280;
-        var telaAltura = 615;
+        var telaLargura = 1380;
+        var telaAltura = 800;
         var naviosCOM = {//aqui defini onde os navios vao spawnar na tela e a posicao
         };
         var naviosPlayer = {
@@ -63,6 +94,8 @@
         };
         var vezDoJogador = true;
         var casasDisponiveis = []; //para o COM jogar
+        var ganhou = false;
+        var bgaudio = document.getElementById("background-sound");
 
         const tamanhoTabuleiro = 10;
         const espacoEntreCasas = 55; //relativo ao tamanho em pixels da celula
@@ -87,6 +120,79 @@
             navio4: '{{asset('img/navios/encouracado.png')}}',
             navio5: '{{asset('img/navios/submarino.png')}}',
         };
+
+        var sonsEspeciais = {
+            somAgua: new Howl({
+                src: [
+                    '{{asset('audio/agua.mp3')}}',
+                ]
+            }),
+            somAguaCOM: new Howl({
+                src: [
+                    '{{asset('audio/agua.mp3')}}',
+                ]
+            }),
+            somBomba: new Howl({
+                src: [
+                    '{{asset('audio/bomba.mp3')}}',
+                ]
+            }),
+            somBomba: new Howl({
+                src: [
+                    '{{asset('audio/bomba.mp3')}}',
+                ]
+            }),
+            somBombardeio: new Howl({
+                src: [
+                    '{{asset('audio/bombardeio.mp3')}}',
+                ]
+            }),
+            somBuzina: new Howl({
+                src: [
+                    '{{asset('audio/buzinaembarcacao.mp3')}}',
+                ]
+            }),
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function desabilitarJogador(vezDoCom){
+            if(!vezDoCom){
+                vezDoJogador = false;
+                return true;
+            }
+            return false;
+        }
+
+        function habilitarJogador(vezTemp){
+            if(vezTemp){
+                vezDoJogador = true;
+            }else{
+                if(!ganhou){
+                    realizarJogadaCOM();
+                }
+            }
+        }
+
+        async function reproduzirBombardeioCompleto(nav, vezDoCom){
+            let vezTemp = desabilitarJogador(vezDoCom);
+            for(let k = 0; k < nav.tamanho; k++){
+                sonsEspeciais.somBombardeio.play();
+                await sleep(900)
+            }
+            habilitarJogador(vezTemp);
+        }
+
+        function enableMute() {
+            if (bgaudio.muted){
+                sonsEspeciais.somBuzina.play();
+                bgaudio.muted = false;
+            } else {
+                bgaudio.muted = true;
+            }
+        }
 
         function getNavioSource(nav){
             switch(nav.tamanho){
@@ -128,6 +234,30 @@
             }
             stage.add(navioLayer);
             images[sourceNavio].src = naviosSources[sourceNavio];
+        };
+
+        function loadBordaTabuleiro(){
+            images['borda_tabuleiro'] = new Image();
+            images['borda_tabuleiro'].onload = function(){
+                var bordaTabuleiro = new Konva.Image({
+                    image: images['borda_tabuleiro'],
+                    x: 5,
+                    y: 17,
+                    width: espacoEntreCasas*(tamanhoTabuleiro+(1.9)),
+                    height: espacoEntreCasas*(tamanhoTabuleiro+(1.4)),
+                    name: 'tabuleiro',
+                });
+                casaLayer.add(bordaTabuleiro);
+            }
+            images['borda_tabuleiro'].src = '{{asset('img/borda_tabuleiro.png')}}';
+        };
+
+        function atualizarTabuleiro(posicaoX){
+            let tabuleiroImage = stage.find('.tabuleiro');
+            for(let key in tabuleiroImage){
+                let tabu = tabuleiroImage[key];
+                tabu.setX(posicaoX);
+            }
         };
 
         function initNaviosCasas(){
@@ -243,10 +373,11 @@
             nav.vida -= 1;
         };
 
-        function afundarNavio(cas, navios, casas){
+        function afundarNavio(cas, navios, casas, vezDoCom){
             let nav = getNavio(cas, navios);
             if(nav.vida == 0){
                 loadNavioAfundado(getNavioSource(nav), getNavioKonva(nav, navios), cas, nav, casas, navios);
+                reproduzirBombardeioCompleto(nav, vezDoCom);
             }
         };
 
@@ -304,34 +435,48 @@
                                     },
                                     statusCode: {
                                         310: function(data){
-                                            casa.image(images['cell_board_water']);
                                             vezDoJogador = false;
-                                            realizarJogadaCOM();
+                                            casa.image(images['cell_board_water']);
+                                            sonsEspeciais.somAgua.play();
+                                            sleep(1000)
+                                                .then(()=> {atualizarTabuleiro(665); })
+                                                .then(()=> {realizarJogadaCOM(); })
                                         },
                                         311: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
-                                            navioAtingido(cas, naviosCOM);
+                                            sonsEspeciais.somBomba.play();
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
                                         },
                                         312: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
+                                            let vezTemp = desabilitarJogador(false);
+                                            sonsEspeciais.somBomba.play();
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
-                                            navioAtingido(cas, naviosCOM);
-                                            afundarNavio(cas, naviosCOM, casasCOM);
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
+                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, false); })
                                         },
                                         313: function(data){
                                             cas.navio = data.responseJSON.navio_id;
                                             cas.posicao = data.responseJSON.posicao_do_navio;
                                             cas.ocupada = "1";
                                             casa.image(images['cell_board_bomb']);
+                                            sonsEspeciais.somBomba.play();
                                             setNaviosPosicoes(cas, naviosCOM, casasCOM);
-                                            navioAtingido(cas, naviosCOM);
-                                            afundarNavio(cas, naviosCOM, casasCOM);
+                                            ganhou = true;
+                                            vezDoJogador = false;
+                                            sleep(1500)
+                                                .then(()=> {navioAtingido(cas, naviosCOM); })
+                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, false); })
+                                                .then(()=> {alert('Você Ganhou!'); })
+
                                         },
                                     },
                                 });
@@ -371,34 +516,45 @@
                 statusCode: {
                     310: function(data){
                         casa.image(images['cell_board_water']);
-                        vezDoJogador = true;
+                        sonsEspeciais.somAguaCOM.play();
+                        sleep(1000)
+                            .then(()=> {atualizarTabuleiro(5); })
+                            .then(()=> {vezDoJogador = true; })
                     },
                     311: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
-                        navioAtingido(cas, naviosPlayer);
-                        realizarJogadaCOM();
+                        sonsEspeciais.somBomba.play();
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {realizarJogadaCOM(); })
                     },
                     312: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
+                        sonsEspeciais.somBomba.play();
                         setNaviosPosicoes(cas, naviosPlayer, casasPlayer);
-                        navioAtingido(cas, naviosPlayer);
-                        afundarNavio(cas, naviosPlayer, casasPlayer);
-                        realizarJogadaCOM();
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {afundarNavio(cas, naviosPlayer, casasPlayer, true); })
                     },
                     313: function(data){
                         cas.navio = data.responseJSON.navio_id;
                         cas.posicao = data.responseJSON.posicao_do_navio;
                         cas.ocupada = "1";
                         casa.image(images['cell_board_bomb']);
+                        sonsEspeciais.somBomba.play();
                         setNaviosPosicoes(cas, naviosPlayer, casasPlayer);
-                        navioAtingido(cas, naviosPlayer);
-                        afundarNavio(cas, naviosPlayer, casasPlayer);
+                        ganhou = true;
+                        vezDoJogador = false;
+                        sleep(1500)
+                            .then(()=> {navioAtingido(cas, naviosPlayer); })
+                            .then(()=> {afundarNavio(cas, naviosPlayer, casasPlayer, true); })
+                            .then(()=> {alert('Você Perdeu!'); })
                     },
                 },
             })
@@ -436,6 +592,7 @@
         };
 
         initNaviosCasas();
+        loadBordaTabuleiro();
         loadImages(casasSources, initStageCasasCOM);//carrega o stage pra iniciar os bagulhos
         loadImages(casasSources, initStageCasasPlayer);//carrega o stage pra iniciar os bagulhos
         initStageNavios(naviosCOM);
