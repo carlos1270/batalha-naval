@@ -352,8 +352,10 @@
 
             navio.on('dragstart', function () {
               this.moveToTop();
-              limparRollCasas(navio.rotation(), navio, nav, casas);
-              setNavioPosicionado(nav, false);
+              if(nav.posicionado){
+                limparRollCasas(navio.rotation(), navio, nav, casas);
+                setNavioPosicionado(nav, false);
+              }
             });
 
             navio.on('dragend', function () { //função pra quando arrastar, fazer o encaixe certinho
