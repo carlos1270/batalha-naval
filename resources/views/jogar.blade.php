@@ -134,19 +134,9 @@
                     '{{asset('audio/bomba.mp3')}}',
                 ]
             }),
-            somBomba: new Howl({
-                src: [
-                    '{{asset('audio/bomba.mp3')}}',
-                ]
-            }),
             somBombardeio: new Howl({
                 src: [
                     '{{asset('audio/bombardeio.mp3')}}',
-                ]
-            }),
-            somBuzina: new Howl({
-                src: [
-                    '{{asset('audio/buzinaembarcacao.mp3')}}',
                 ]
             }),
         }
@@ -184,7 +174,6 @@
 
         function enableMute() {
             if (bgaudio.muted){
-                sonsEspeciais.somBuzina.play();
                 bgaudio.muted = false;
             } else {
                 bgaudio.muted = true;
@@ -471,7 +460,7 @@
                                             vezDoJogador = false;
                                             sleep(1500)
                                                 .then(()=> {navioAtingido(cas, naviosCOM); })
-                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, false); })
+                                                .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, true); })
                                                 .then(()=> {alert('Você Ganhou!'); })
 
                                         },
