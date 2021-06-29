@@ -55,11 +55,7 @@
         <source src="{{asset('audio/suspense02.mp3')}}" type="audio/mpeg">
     </audio>
 
-    <!-- <button onclick="enableMute()" class="button sound" type="button" href="#">Som</button> -->
-    <div class="button-som" onclick="enableMute()">
-        <input href="#" type="button" class="button sound" value="Som">
-    </div>
-
+    <button onclick="enableMute()" class="button">Som</button>
 
     <!-- Modal
     <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

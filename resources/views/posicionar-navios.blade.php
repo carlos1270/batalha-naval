@@ -23,10 +23,9 @@
             <input href="#" type="button" class="button resetar" value="Resetar">
         </div>
 
-        <div class="button-voltar" onclick="">
-            <input href="#" type="button" class="button voltar" value="Voltar">
+        <div class="button-voltar" onclick="window.location.href='{{route('index')}}'">
+            <input href="" type="button" class="button voltar" value="Voltar">
         </div>
-
 
         <div class="button-voltar" onclick="enableMute()">
             <input href="" type="button" class="button voltar" value="Som">
