@@ -52,11 +52,11 @@ class JogoController extends Controller
 
     public function resultado($resultado) {
         if ($resultado == 1) {
-            $img = asset('img/ganhamo.png');
+            $img = 1;
             $msg_1 = "Você ganhou!";
             $msg_2 = "Parabéns soldado, você ganhou a batalha!";
         } else {
-            $img = asset('img/perdemo.jpeg');
+            $img = 0;
             $msg_1 = "Você perdeu!";
             $msg_2 = "Não foi dessa vez, eles podem ter vencido a batalha, mas com treino você vencerá a guerra.";
         }
