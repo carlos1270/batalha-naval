@@ -15,7 +15,7 @@
     @yield('content')
 
     <audio id="background-sound" controls loop muted autoplay hidden>
-        <source src="{{asset('audio/world-of-warship.mp3')}}" type="audio/mpeg">
+        <source src="{{asset('audio/mar.mp3')}}" type="audio/mpeg">
     </audio>
 
     <script>

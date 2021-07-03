@@ -7,6 +7,7 @@
         <meta charset="utf-8" />
 
         <title>Batalha Naval - JOGAR</title>
+        <link rel="icon" type="image/png" href="{{asset('img/icon-app.png')}}">
         <link rel="stylesheet" href="{{asset('css/jogar.css')}}">
     </head>
     <body>
