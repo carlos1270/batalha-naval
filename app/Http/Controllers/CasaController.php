@@ -20,21 +20,17 @@ class CasaController extends Controller
         $casa->update();
 
         $codigoRetorno = $this::ERROU;
-        $msg = "Acertou na água";
 
         if ($casa->preenchido) {
             $codigoRetorno = $this::ACERTOU;
-            $msg = "Acertou";
 
             $navio = $casa->navio;
             if($this->checarAfundado($navio)) {
                 $codigoRetorno = $this::AFUNDOU;
-                $msg = "Afundou";
 
                 $tabuleiro = $casa->tabuleiro;
                 if ($this->checarGanhou($tabuleiro)) {
                     $codigoRetorno = $this::GANHOU;
-                    $msg = "Ganhou";
                 }
             }
         }

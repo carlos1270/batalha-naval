@@ -49,4 +49,18 @@ class JogoController extends Controller
         
         return view('jogar', compact('jogo'));
     }
+
+    public function resultado($resultado) {
+        if ($resultado == 1) {
+            $img = asset('img/ganhamo.png');
+            $msg_1 = "Você ganhou!";
+            $msg_2 = "Parabéns soldado, você ganhou a batalha!";
+        } else {
+            $img = asset('img/perdemo.jpeg');
+            $msg_1 = "Você perdeu!";
+            $msg_2 = "Não foi dessa vez, eles podem ter vencido a batalha, mas com treino você vencerá a guerra.";
+        }
+        
+        return view('resultado', compact('img', 'msg_1', 'msg_2'));
+    }
 }

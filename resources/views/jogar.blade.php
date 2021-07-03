@@ -57,8 +57,8 @@
 
     <button onclick="enableMute()" class="button">Som</button>
 
-    <!-- Modal
-    <div class="modal fade" id="ModalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!-- Modal você ganhou -->
+    {{-- <div class="modal fade" id="modalGanhou" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -76,7 +76,7 @@
           </div>
         </div>
       </div>
-    </div>-->
+    </div> --}}
 
     <script>
         var telaLargura = 1380;
@@ -461,7 +461,7 @@
                                             sleep(1500)
                                                 .then(()=> {navioAtingido(cas, naviosCOM); })
                                                 .then(()=> {afundarNavio(cas, naviosCOM, casasCOM, true); })
-                                                .then(()=> {alert('Você Ganhou!'); })
+                                                .then(()=> {window.location.href="{{route('resultado', ['resultado' => 1])}}";})
 
                                         },
                                     },
@@ -540,7 +540,7 @@
                         sleep(1500)
                             .then(()=> {navioAtingido(cas, naviosPlayer); })
                             .then(()=> {afundarNavio(cas, naviosPlayer, casasPlayer, true); })
-                            .then(()=> {alert('Você Perdeu!'); })
+                            .then(()=> {window.location.href="{{route('resultado', ['resultado' => 0])}}";})
                     },
                 },
             })
