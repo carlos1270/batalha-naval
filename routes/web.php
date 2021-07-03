@@ -20,3 +20,5 @@ Route::post('/salvar-navios', [JogoController::class, 'salvarNaviosUser'])->name
 Route::get('/jogar/{id}', [JogoController::class, 'jogar'])->name('jogar');
 
 Route::get('/checar-acerto', [CasaController::class, 'checarTiro'])->name('atirar');
+
+Route::get('/resultado/{resultado}', [JogoController::class, 'resultado'])->name('resultado');
