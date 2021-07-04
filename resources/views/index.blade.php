@@ -3,7 +3,7 @@
 @section('content')
 
     <nav id="navbar" class="navbar navbar-dark fixed-top">
-        <a class="navbar-brand mx-auto" href="#"><img src="img/ufape.png" alt="" ></a>
+        <a class="navbar-brand mx-auto" href="http://ufape.edu.br/" target="_blank"><img src="img/ufape.png" alt="" ></a>
         <a class="btn btn-outline-light btn-lg" onclick="enableMute()" target="_blank">Som</a>
     </nav>
 
