@@ -39,8 +39,6 @@ class JogoController extends Controller
             }
         }
 
-        $tabuleiros = $jogo->tabuleiros;
-
         return redirect( route('jogar', ['id' => $jogo->id]) );
     }
 
