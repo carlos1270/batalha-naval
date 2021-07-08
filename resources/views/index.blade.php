@@ -11,7 +11,7 @@
         <div class="video-wrap">
             <div id="video">
                 <video id="bgivd" autoplay loop muted playsinline>
-                    <source src="video/mar.mp4" type="video/mp4">
+                    <source src="{{asset('video/mar.mp4')}}" type="video/mp4">
                 </video>
             </div>
         </div>

@@ -14,6 +14,20 @@ class CasaController extends Controller
     public const AFUNDOU = 312;
     public const GANHOU = 313;
 
+    public static function criarCasas(Tabuleiro $tabuleiro) {
+        for ($i = 1; $i <= $tabuleiro->qtd_linhas; $i++) {
+            for ($j = 1; $j <= $tabuleiro->qtd_colunas; $j++) {
+                $casa = new Casa();
+                $casa->linha = $i;
+                $casa->coluna = $j;
+                $casa->preenchido = FALSE;
+                $casa->acertado = FALSE;
+                $casa->tabuleiro_id = $tabuleiro->id;
+                $casa->save();
+            }
+        }
+    }
+    
     public function checarTiro(Request $request) {
         $casa = Casa::find($request->casa_id);
         $casa->acertado = true;

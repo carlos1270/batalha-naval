@@ -29,18 +29,4 @@ class Casa extends Model
     {
         return $this->belongsTo(Navio::class, 'navio_id');
     }
-
-    public static function criarCasas(Tabuleiro $tabuleiro) {
-        for ($i = 1; $i <= $tabuleiro->qtd_linhas; $i++) {
-            for ($j = 1; $j <= $tabuleiro->qtd_colunas; $j++) {
-                $casa = new Casa();
-                $casa->linha = $i;
-                $casa->coluna = $j;
-                $casa->preenchido = FALSE;
-                $casa->acertado = FALSE;
-                $casa->tabuleiro_id = $tabuleiro->id;
-                $casa->save();
-            }
-        }
-    }
 }

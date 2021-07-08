@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Navio;
+use App\Http\Controllers\NavioController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use App\Models\Jogo;
 use App\Models\Tabuleiro;
-use App\Models\Casa;
+use App\Http\Controllers\CasaController;
 use phpDocumentor\Reflection\Types\True_;
 
 class TabuleiroController extends Controller
@@ -21,8 +21,8 @@ class TabuleiroController extends Controller
         $tabuleiroJogador->qtd_jogadas = 0;
         $tabuleiroJogador->jogo_id = $jogo->id;
         $tabuleiroJogador->save();
-        Casa::criarCasas($tabuleiroJogador);
-        Navio::criarNavios($tabuleiroJogador);
+        CasaController::criarCasas($tabuleiroJogador);
+        NavioController::criarNavios($tabuleiroJogador);
         $tabuleiros->push($tabuleiroJogador);
 
         $tabuleiroCOM = new Tabuleiro();
@@ -32,8 +32,8 @@ class TabuleiroController extends Controller
         $tabuleiroCOM->jogo_id = $jogo->id;
         $tabuleiroCOM->save();
         $tabuleiros->push($tabuleiroCOM);
-        Casa::criarCasas($tabuleiroCOM);
-        Navio::criarNavios($tabuleiroCOM);
+        CasaController::criarCasas($tabuleiroCOM);
+        NavioController::criarNavios($tabuleiroCOM);
 
         self::preencherTabuleiroCOM($tabuleiroCOM);
         return $tabuleiros;
